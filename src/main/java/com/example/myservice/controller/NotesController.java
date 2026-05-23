@@ -22,10 +22,15 @@ public class NotesController {
 
     // 🌟 GET: ONLY displays the page and reads from the DB. No saving allowed here!
     @GetMapping
-    public String showForm(Model model) {
+    public String showForm(@RequestParam(value = "success", required = false) String success, Model model) {
         model.addAttribute("sessionRequest", new SessionRequest());
-        model.addAttribute("savedNotes", noteRepository.findTop5ByOrderByCreatedAtDesc()
-        ); // Purely reading 5 latest rows
+        model.addAttribute("savedNotes", noteRepository.findTop5ByOrderByCreatedAtDesc());
+
+        // Show success message if redirected from save
+        if ("true".equals(success)) {
+            model.addAttribute("saveSuccess", true);
+        }
+
         return "tutor-form";
     }
 
@@ -70,11 +75,6 @@ public class NotesController {
 
         // 🌟 Post-Redirect-Get pattern workaround for demo:
         // We pass the success flag and clear the input form
-        model.addAttribute("saveSuccess", true);
-        model.addAttribute("sessionRequest", new SessionRequest());
-        model.addAttribute("savedNotes", noteRepository.findTop5ByOrderByCreatedAtDesc()
-        );
-
-        return "tutor-form";
+        return "redirect:/notes?success=true";
     }
 }

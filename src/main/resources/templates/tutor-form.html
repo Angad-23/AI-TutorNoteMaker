@@ -73,7 +73,7 @@
         .logo-my {
             font-family: 'Poppins', sans-serif;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.0rem;
             color: var(--white);
         }
         .logo-virtual {
@@ -327,7 +327,7 @@
             border-radius:12px;
             padding:15px;
             font-size:.95rem;
-            font-weight:900;
+            font-weight:800;
             font-family:'Poppins',sans-serif;
             cursor:pointer;
             transition:all .2s;
@@ -518,6 +518,8 @@
             font-size:.7rem;
             color:rgba(255,255,255,.2);
             font-weight:600;
+
+
         }
         .footer-right span { color:rgba(255,255,255,.4); }
     </style>
@@ -526,28 +528,14 @@
 
 <!-- ══ TOP NAV ══ -->
 <nav class="topnav">
-    <div class="nav-logo">
-        <div class="logo-svg-wrap">
-            <!-- MyVirtualTAs Logo SVG Recreation -->
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Monitor frame -->
-                <rect x="4" y="4" width="30" height="22" rx="3" stroke="#1A3480" stroke-width="2.8" fill="none"/>
-                <!-- Monitor stand -->
-                <rect x="15" y="26" width="8" height="4" rx="1" fill="#1A3480"/>
-                <rect x="11" y="30" width="16" height="2" rx="1" fill="#1A3480"/>
-                <!-- Open book pages -->
-                <path d="M10 20 Q14 15 19 17 Q24 15 28 20" stroke="#2BA8BF" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                <path d="M10 20 Q14 22 19 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                <path d="M19 20 Q24 22 28 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                <!-- Sun/orange circle -->
-                <circle cx="19" cy="12" r="4.5" fill="#E8622A"/>
-            </svg>
-        </div>
-        <div class="logo-text-block">
-            <div><span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span></div>
-            <div class="logo-powered">powered by <span>eurekii</span></div>
-        </div>
-    </div>
+        <a th:href="@{/notes}" class="nav-logo" style="text-decoration: none;">
+            <div class="logo-svg-wrap">
+                <img src="/logo (2).png" alt="MyVirtualTAs Logo" style="width: 38px; height: 38px; object-fit: contain;">        </div>
+            <div class="logo-text-block">
+                <div><span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span></div>
+                <div class="logo-powered">powered by <span>eurekii</span></div>
+            </div>
+        </a>
 
     <div class="nav-right">
         <div class="nav-badge">
@@ -563,16 +551,16 @@
     <div class="hero-decor-2"></div>
     <div class="hero-decor-3"></div>
     <div class="hero-inner">
-        <div class="hero-eyebrow">
-            <span class="hero-eyebrow-dot"></span>
-            AI-Powered Session Notes
-        </div>
+<!--        <div class="hero-eyebrow">-->
+<!--            <span class="hero-eyebrow-dot"></span>-->
+<!--            AI-Powered Session Notes-->
+<!--        </div>-->
         <div class="hero-title">
             Generate <span class="hl-orange">Professional Notes</span><br>
             in <span class="hl-teal">Seconds</span>, Not Minutes
         </div>
         <div class="hero-sub">
-            Fill in a few quick session pointers and let our AI write a polished, curriculum-aligned note — automatically improving with every session your tutors save.
+            Fill in a few quick session pointers and let our AI write a polished, curriculum-aligned note - automatically improving with every session your tutors save.
         </div>
     </div>
 </div>
@@ -625,7 +613,7 @@
 <!--                    <div class="card-head-icon icon-orange">🧑‍🏫</div>-->
                     <div>
                         <div class="card-head-title">Tutor Information</div>
-                        <div class="card-head-sub">Who is conducting this session?</div>
+<!--                        <div class="card-head-sub">Who is conducting this session?</div>-->
                     </div>
                 </div>
                 <div class="card-body">
@@ -646,7 +634,7 @@
 <!--                    <div class="card-head-icon icon-teal">👩‍🎓</div>-->
                     <div>
                         <div class="card-head-title">Student Information</div>
-                        <div class="card-head-sub">Who are we writing notes for?</div>
+<!--                        <div class="card-head-sub">Who are we writing notes for?</div>-->
                     </div>
                 </div>
                 <div class="card-body">
@@ -694,7 +682,7 @@
 <!--                <div class="card-head-icon icon-navy"></div>-->
                 <div>
                     <div class="card-head-title">Engagement &amp; Key Notes</div>
-                    <div class="card-head-sub">Describe how the session went</div>
+<!--                    <div class="card-head-sub">Describe how the session went</div>-->
                 </div>
             </div>
             <div class="card-body">
@@ -717,7 +705,7 @@
                         </div>
                     </div>
                     <div class="field" style="grid-column:2/4;">
-                        <label class="flabel">Key Pointers / Raw Bullets <span class="req">*</span></label>
+                        <label class="flabel">Key Pointers (make sure to keep it in bullets) <span class="req">*</span></label>
                         <textarea th:field="*{keyPointers}" class="ftextarea" rows="3"
                                   placeholder="e.g., mastered fractions, struggled with mixed numbers, great questions about real-world use..." required></textarea>
                     </div>
@@ -736,7 +724,7 @@
             <div class="step-line"></div>
         </div>
 
-        <button type="submit" class="btn-gen">Generate Professional Note Instantly</button>
+        <button type="submit" class="btn-gen">Generate Notes</button>
 
     </form>
 
@@ -749,7 +737,7 @@
             </div>
             <div class="db-count-pill">
                 <div class="ldot"></div>
-                <span th:text="${#lists.size(savedNotes)} + ' entries'">0 entries</span>
+<!--                <span th:text="${#lists.size(savedNotes)} + ' entries'">0 entries</span>-->
             </div>
         </div>
         <div style="overflow-x:auto;">
@@ -793,21 +781,21 @@
 <!-- ══ FOOTER ══ -->
 <div class="footer">
     <div class="footer-logo">
-        <div class="footer-logo-icon">
-            <svg width="26" height="26" viewBox="0 0 38 38" fill="none">
-                <rect x="4" y="4" width="30" height="22" rx="3" stroke="#1A3480" stroke-width="2.8" fill="none"/>
-                <rect x="15" y="26" width="8" height="4" rx="1" fill="#1A3480"/>
-                <rect x="11" y="30" width="16" height="2" rx="1" fill="#1A3480"/>
-                <path d="M10 20 Q14 15 19 17 Q24 15 28 20" stroke="#2BA8BF" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                <path d="M10 20 Q14 22 19 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                <path d="M19 20 Q24 22 28 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                <circle cx="19" cy="12" r="4.5" fill="#E8622A"/>
-            </svg>
-        </div>
-        <div class="footer-name">My<span class="o">Virtual</span><span class="t">TAs</span></div>
+<!--        <div class="footer-logo-icon">-->
+<!--            <svg width="26" height="26" viewBox="0 0 38 38" fill="none">-->
+<!--                <rect x="4" y="4" width="30" height="22" rx="3" stroke="#1A3480" stroke-width="2.8" fill="none"/>-->
+<!--                <rect x="15" y="26" width="8" height="4" rx="1" fill="#1A3480"/>-->
+<!--                <rect x="11" y="30" width="16" height="2" rx="1" fill="#1A3480"/>-->
+<!--                <path d="M10 20 Q14 15 19 17 Q24 15 28 20" stroke="#2BA8BF" stroke-width="2.2" fill="none" stroke-linecap="round"/>-->
+<!--                <path d="M10 20 Q14 22 19 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>-->
+<!--                <path d="M19 20 Q24 22 28 20" stroke="#2BA8BF" stroke-width="1.5" fill="none" stroke-linecap="round"/>-->
+<!--                <circle cx="19" cy="12" r="4.5" fill="#E8622A"/>-->
+<!--            </svg>-->
+<!--        </div>-->
+<!--        <div class="footer-name">My<span class="o">Virtual</span><span class="t">TAs</span></div>-->
     </div>
     <div class="footer-right">
-        Powered by <span>Groq AI</span> + <span>MySQL</span> &nbsp;·&nbsp; © 2026 Trivium Education Services
+        MyVirtualTAs © 2026 Trivium Education Services Pvt. Ltd.
     </div>
 </div>
 
