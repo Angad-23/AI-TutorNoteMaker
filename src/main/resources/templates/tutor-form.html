@@ -812,7 +812,12 @@
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const d = document.querySelector('input[type="date"]');
-        if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+        // if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        d.value = `${year}-${month}-${day}`;
         const radios = document.querySelectorAll('input[name="engagement"]');
         if (![...radios].some(r => r.checked) && radios.length) radios[0].checked = true;
     });

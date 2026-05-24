@@ -44,10 +44,33 @@ public class DashboardController {
                 .collect(Collectors.toList());
 
         // Notes saved today
-        String today = LocalDate.now().toString();
+//        String today = LocalDate.now().toString(); // 2026-05-25
+        String today = LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")).toString();
+
+        System.out.println("TODAY IS: " + today);
+        System.out.println("SESSION DATES IN DB: " + allNotes.stream()
+                .map(SessionNote::getSessionDate)
+                .collect(Collectors.toList()));
+
+// ✅ Notes today
         long todayCount = allNotes.stream()
-                .filter(n -> n.getSessionDate() != null && n.getSessionDate().equals(today))
+                .filter(n -> n.getSessionDate() != null &&
+                        n.getSessionDate().equals(today))
                 .count();
+
+// ✅ DEBUG - put AFTER todayCount
+        System.out.println("TODAY IS: " + today);
+        System.out.println("ALL NOTES COUNT: " + allNotes.size());
+        System.out.println("TUTOR FULL NAME: " + tutor.getFullName());
+        System.out.println("TODAY COUNT: " + todayCount);
+        System.out.println("SESSION DATES: " + allNotes.stream()
+                .map(SessionNote::getSessionDate)
+                .collect(Collectors.toList()));
+
+//        long todayCount = allNotes.stream()
+//                .filter(n -> n.getSessionDate() != null &&
+//                        n.getSessionDate().equals(today))
+//                .count();
 
         // Unique students taught
         long uniqueStudents = allNotes.stream()

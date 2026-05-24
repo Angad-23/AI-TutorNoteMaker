@@ -2,6 +2,8 @@ package com.example.myservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,10 +22,10 @@ public class SessionNote {
     private String tutorName;
     private String sessionDate;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "text")
     private String rawPointers;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "text")
     private String finalApprovedNote;
 
     private String districtOrState; // Tracking regional compliance
@@ -31,8 +33,6 @@ public class SessionNote {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(java.time.ZoneId.of("Asia/Kolkata"));
     }
-
-
 }
