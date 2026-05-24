@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>MyVirtualTAs — Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {     box-sizing: border-box;
+            margin: 1px;
+            padding: 2px; }
+        :root {
+            --navy: #0A1931; --navy-2: #142970;
+            --orange: #E8622A; --teal: #2BA8BF;
+            --white: #FFFFFF; --off: #F5F7FC;
+            --border: #DDE4F5; --muted: #5B6E96;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--navy);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .logo-wrap {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 28px;
+        }
+        .logo-icon {
+            width: 44px; height: 44px;
+            background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 4px;
+        }
+        .logo-my { font-family:'Poppins',sans-serif; font-weight:700; font-size:1.2rem; color:var(--white); }
+        .logo-virtual { font-family:'Poppins',sans-serif; font-weight:900; font-size:1.2rem; color:var(--orange); }
+        .logo-tas { font-family:'Poppins',sans-serif; font-weight:900; font-size:1.2rem; color:var(--teal); }
+        .logo-powered { font-size:.58rem; color:rgba(255,255,255,.35); font-weight:600; }
+        .logo-powered span { color:rgba(255,255,255,.6); }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 34px 30px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+
+        }
+        .card-title { font-family:'Poppins',sans-serif; font-weight:800; font-size:26px; color:var(--navy); margin-bottom:10px; display: flex; justify-content: center}
+        .card-sub { font-size:.82rem; color:var(--muted); margin-bottom:22px; }
+
+        .alert-error {
+            background:#FEE2E2; border:1.5px solid #FCA5A5;
+            border-radius:8px; padding:10px 14px;
+            font-size:.8rem; font-weight:700; color:#B91C1C; margin-bottom:14px;
+        }
+        .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .field { margin-bottom: 14px; }
+        .flabel { display:block; font-size:.72rem; font-weight:800; color:var(--navy); margin-bottom:5px; }
+        .finput {
+            width:100%; background:var(--off); border:1.5px solid var(--border);
+            border-radius:9px; padding:10px 13px; font-size:.85rem;
+            font-family:'Nunito',sans-serif; font-weight:600; color:var(--navy);
+            outline:none; transition:all .2s;
+        }
+        .finput:focus { border-color:var(--navy); background:var(--white); box-shadow:0 0 0 3px rgba(10,25,49,.08); }
+
+        .btn-register {
+            width:100%; background:var(--orange); color:var(--white);
+            border:none; border-radius:10px; padding:13px;
+            font-size:.9rem; font-weight:800; font-family:'Poppins',sans-serif;
+            cursor:pointer; transition:all .2s; margin-top:6px;
+        }
+        .btn-register:hover { background:#F07842; transform:translateY(-1px); box-shadow:0 6px 18px rgba(232,98,42,.3); }
+
+        .login-link {
+            text-align:center; margin-top:18px;
+            font-size:.78rem; color:var(--muted); font-weight:600;
+        }
+        .login-link a { color:var(--navy); font-weight:800; text-decoration:none; }
+        .login-link a:hover { color:var(--orange); }
+    </style>
+</head>
+<body>
+
+<!--<div class="logo-wrap">-->
+<!--    <div class="logo-svg-wrap">-->
+<!--        <img src="/logo.png" alt="MyVirtualTAs Logo"-->
+<!--             style="width:38px; height:38px; object-fit:contain;">-->
+<!--    </div>-->
+<!--    <div class="logo-text-block">-->
+<!--        <div class="logo-text-block">-->
+<!--            <div><span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span></div>-->
+<!--            <div class="logo-powered">powered by <span>eurekii</span></div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="card">
+    <div class="card-title">Create Your Account</div>
+<!--    <div class="card-sub">Join Trivium's AI-powered note system</div>-->
+
+    <div th:if="${errorMsg}" class="alert-error" th:text="${errorMsg}"></div>
+
+    <form th:action="@{/register}" th:object="${tutorUser}" method="post">
+        <div class="row-2">
+            <div class="field">
+                <label class="flabel">Full Name</label>
+                <input type="text" th:field="*{fullName}" class="finput" placeholder="Jennifer Lee" required />
+            </div>
+            <div class="field">
+                <label class="flabel">Username</label>
+                <input type="text" th:field="*{username}" class="finput" placeholder="jennifer_lee" required />
+            </div>
+        </div>
+        <div class="field">
+            <label class="flabel">Email Address</label>
+            <input type="email" th:field="*{email}" class="finput" placeholder="jennifer@trivium.com" required />
+        </div>
+        <div class="row-2">
+            <div class="field">
+                <label class="flabel">Password</label>
+                <input type="password" th:field="*{password}" class="finput" placeholder="Min. 8 characters" required />
+            </div>
+            <div class="field">
+                <label class="flabel">Confirm Password</label>
+                <input type="password" name="confirmPassword" class="finput" placeholder="Repeat password" required />
+            </div>
+        </div>
+        <button type="submit" class="btn-register">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/login">Sign in here</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>MyVirtualTAs — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy: #0A1931; --navy-2: #142970; --navy-3: #1E3380; --navy-dark: #0A1535;
+            --orange: #E8622A; --teal: #2BA8BF;
+            --white: #FFFFFF; --off: #F5F7FC; --border: #DDE4F5;
+            --text: #0A1931; --muted: #5B6E96;
+            --green: #0B7A56; --green-bg: #E6FAF3;
+            --r: 12px; --r-lg: 18px;
+        }
+        body { font-family:'Nunito',sans-serif; background:var(--off); color:var(--text); min-height:100vh; }
+
+        /* ── TOPNAV ── */
+        .topnav {
+            background: var(--navy-dark);
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 24px rgba(10,21,53,.5);
+        }
+
+        /* ── LOGO SVG ── */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .logo-svg-wrap {
+            width: 46px;
+            height: 46px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.2);
+        }
+
+        .logo-text-block { line-height: 1.1; }
+
+        .logo-icon { width:38px; height:38px; background:white; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:4px; }
+        .logo-my {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.0rem;
+            color: var(--white);
+        }
+        .logo-virtual {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--orange);
+        }
+        .logo-tas {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--teal);
+        }
+        .logo-powered {
+            font-size: .58rem;
+            color: rgba(255,255,255,.35);
+            font-weight: 600;
+            letter-spacing: .06em;
+            margin-top: 1px;
+        }
+        .logo-powered span { color: rgba(255,255,255,.6); }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-user {
+            display:flex; align-items:center; gap:8px;
+            background:rgba(255,255,255,.07);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:20px; padding:5px 14px 5px 5px;
+        }
+        .nav-avatar {
+            width:28px; height:28px; border-radius:50%;
+            background:var(--orange);
+            display:flex; align-items:center; justify-content:center;
+            font-size:.72rem; font-weight:800; color:white;
+        }
+        .nav-username { font-size:.78rem; font-weight:700; color:rgba(255,255,255,.8); }
+
+        .btn-logout {
+            background:rgba(232,98,42,.15);
+            border:1px solid rgba(232,98,42,.3);
+            color:var(--orange);
+            border-radius:8px; padding:6px 14px;
+            font-size:.75rem; font-weight:800;
+            font-family:'Nunito',sans-serif;
+            cursor:pointer; transition:all .15s;
+            text-decoration:none;
+        }
+        .btn-logout:hover { background:var(--orange); color:white; }
+
+        /* ── BODY ── */
+        .body-wrap { max-width:900px; margin:0 auto; padding:32px 20px 48px; }
+
+        /* ── WELCOME BANNER ── */
+        .welcome-banner {
+            background:var(--navy);
+            border-radius:var(--r-lg);
+            padding:26px 30px;
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:24px;
+            position:relative; overflow:hidden;
+        }
+        .welcome-banner::before {
+            content:''; position:absolute;
+            top:-40px; right:-40px;
+            width:160px; height:160px;
+            background:var(--orange); opacity:.07; border-radius:50%;
+        }
+        .welcome-banner::after {
+            content:''; position:absolute;
+            bottom:-50px; left:30%;
+            width:130px; height:130px;
+            background:var(--teal); opacity:.06; border-radius:50%;
+        }
+        .welcome-left { position:relative; z-index:1; }
+        .welcome-hi { font-size:.75rem; font-weight:700; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+        .welcome-name { font-family:'Poppins',sans-serif; font-weight:800; font-size:1.5rem; color:var(--white); margin-bottom:4px; }
+        .welcome-name span { color:var(--orange); }
+        .welcome-sub { font-size:.82rem; color:rgba(255,255,255,.45); }
+        .btn-generate {
+            background:var(--orange); color:var(--white);
+            border:none; border-radius:10px;
+            padding:12px 22px;
+            font-size:.88rem; font-weight:800;
+            font-family:'Poppins',sans-serif;
+            cursor:pointer; transition:all .2s;
+            text-decoration:none; display:inline-block;
+            position:relative; z-index:1;
+            white-space:nowrap;
+        }
+        .btn-generate:hover { background:#F07842; transform:translateY(-1px); box-shadow:0 6px 18px rgba(232,98,42,.35); color:white; }
+
+        /* ── STATS ROW ── */
+        .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+        .stat-card {
+            background:var(--white); border:1.5px solid var(--border);
+            border-radius:var(--r-lg); padding:18px 20px;
+            display:flex; align-items:center; gap:14px;
+            box-shadow:0 2px 10px rgba(26,52,128,.05);
+        }
+        .stat-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .si-navy { background:#EBF2FF; }
+        .si-orange { background:#FFF0EB; }
+        .si-teal { background:#E8F9FC; }
+        .stat-num { font-family:'Poppins',sans-serif; font-weight:800; font-size:1.4rem; color:var(--navy); }
+        .stat-lbl { font-size:.7rem; color:var(--muted); font-weight:600; margin-top:1px; }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-family:'Poppins',sans-serif; font-weight:800;
+            font-size:.95rem; color:var(--navy);
+            display:flex; align-items:center; gap:8px;
+            margin-bottom:14px;
+        }
+        .section-title .dot { width:8px; height:8px; border-radius:50%; background:var(--orange); }
+
+        /* ── NOTES LIST ── */
+        .note-card {
+            background:var(--white); border:1.5px solid var(--border);
+            border-radius:var(--r-lg); padding:18px 22px;
+            margin-bottom:12px;
+            box-shadow:0 2px 8px rgba(26,52,128,.04);
+            transition:box-shadow .15s;
+        }
+        .note-card:hover { box-shadow:0 4px 16px rgba(26,52,128,.1); }
+        .note-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+        .note-student { font-family:'Poppins',sans-serif; font-weight:700; font-size:.92rem; color:var(--navy); }
+        .note-subject { font-size:.75rem; color:var(--muted); font-weight:600; margin-top:2px; }
+        .note-meta { display:flex; align-items:center; gap:8px; }
+        .nbadge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:.62rem; font-weight:800; text-transform:uppercase; }
+        .nb-md { background:#EBF2FF; color:var(--navy); }
+        .nb-fl { background:#E8F9FC; color:#0C6B7E; }
+        .nb-gen { background:#F1F5F9; color:var(--muted); }
+        .epill { display:inline-flex; align-items:center; gap:4px; font-size:.72rem; font-weight:700; }
+        .epdot { width:6px; height:6px; border-radius:50%; }
+        .ep-h { background:#22C55E; } .ep-m { background:#F59E0B; } .ep-l { background:#EF4444; }
+        .note-preview {
+            font-size:.8rem; color:var(--muted); line-height:1.55;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+            border-left:3px solid var(--border); padding-left:12px;
+            margin-bottom:10px;
+        }
+        .note-footer { display:flex; align-items:center; justify-content:space-between; }
+        .note-date { font-size:.68rem; color:var(--muted); font-weight:600; }
+
+        .empty-state {
+            text-align:center; padding:48px 20px;
+            background:var(--white); border:1.5px dashed var(--border);
+            border-radius:var(--r-lg);
+        }
+        .empty-icon { font-size:2.5rem; margin-bottom:12px; }
+        .empty-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:1rem; color:var(--navy); margin-bottom:6px; }
+        .empty-sub { font-size:.8rem; color:var(--muted); margin-bottom:20px; }
+    </style>
+</head>
+<body>
+
+<nav class="topnav">
+    <a th:href="@{/dashboard}" class="nav-logo" style="text-decoration:none;">
+        <div class="logo-svg-wrap">
+            <img src="/logo.png" alt="MyVirtualTAs Logo"
+                 style="width:38px; height:38px; object-fit:contain;">
+        </div>
+        <div class="logo-text-block">
+            <div class="logo-text-block">
+                <div><span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span></div>
+                <div class="logo-powered">powered by <span>eurekii</span></div>
+            </div>
+        </div>
+    </a>
+
+    <div class="nav-right">
+        <div class="nav-badge">
+            <div class="pulse"></div>
+            Connected
+        </div>
+        <a href="/dashboard" style="
+            text-decoration:none;
+            color:rgba(255,255,255,.7);
+            font-size:.78rem; font-weight:700;
+            padding:6px 14px; border-radius:8px;
+            border:1px solid rgba(255,255,255,.1);
+            background:rgba(255,255,255,.06);">
+            Dashboard
+        </a>
+<!--        <a href="/logout" style="-->
+<!--            text-decoration:none;-->
+<!--            background:rgba(232,98,42,.15);-->
+<!--            border:1px solid rgba(232,98,42,.3);-->
+<!--            color:#E8622A; border-radius:8px;-->
+<!--            padding:6px 14px;-->
+<!--            font-size:.78rem; font-weight:800;">-->
+<!--            Logout-->
+<!--        </a>-->
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+<!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+            <button type="submit" style="
+        background:rgba(232,98,42,.15);
+        border:1px solid rgba(232,98,42,.3);
+        color:#E8622A;
+        border-radius:8px;
+        padding:6px 14px;
+        font-size:.78rem;
+        font-weight:800;
+        font-family:'Nunito',sans-serif;
+        cursor:pointer;
+        transition:all .15s;">
+                Logout
+            </button>
+        </form>
+    </div>
+</nav>
+
+<!-- BODY -->
+<div class="body-wrap">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-left">
+            <div class="welcome-hi">Welcome back</div>
+            <div class="welcome-name">Hello, <span th:text="${fullName}">Tutor</span>!</div>
+            <div class="welcome-sub">Ready to generate today's session notes?</div>
+        </div>
+        <a href="/notes" class="btn-generate">Generate New Note</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+<!--            <div class="stat-icon si-navy">📝</div>-->
+            <div>
+                <div class="stat-num" th:text="${totalNotes}">0</div>
+                <div class="stat-lbl">Your Total Notes</div>
+            </div>
+        </div>
+        <div class="stat-card">
+<!--            <div class="stat-icon si-orange">📅</div>-->
+            <div>
+                <div class="stat-num" th:text="${todayNotes}">0</div>
+                <div class="stat-lbl">Notes Today</div>
+            </div>
+        </div>
+        <div class="stat-card">
+<!--            <div class="stat-icon si-teal">🎓</div>-->
+            <div>
+                <div class="stat-num" th:text="${totalStudents}">0</div>
+                <div class="stat-lbl">Students Taught</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Notes -->
+    <div class="section-title"><span class="dot"></span> Your Recent Session Notes</div>
+
+    <div th:if="${#lists.isEmpty(recentNotes)}" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No notes yet!</div>
+        <div class="empty-sub">Generate your first session note to see it here.</div>
+        <a href="/notes" class="btn-generate">⚡ Generate First Note</a>
+    </div>
+
+    <div th:each="note : ${recentNotes}" class="note-card">
+        <div class="note-top">
+            <div>
+                <div class="note-student" th:text="${note.studentName}"></div>
+                <div class="note-subject" th:text="${note.subject} + ' · ' + ${note.gradeLevel}"></div>
+            </div>
+            <div class="note-meta">
+                <span class="nbadge"
+                      th:classappend="${note.districtOrState == 'Maryland'} ? 'nb-md' : (${note.districtOrState == 'Florida'} ? 'nb-fl' : 'nb-gen')"
+                      th:text="${note.districtOrState}"></span>
+                <span class="epill">
+                    <span class="epdot" th:classappend="${note.engagement == 'High'} ? 'ep-h' : (${note.engagement == 'Medium'} ? 'ep-m' : 'ep-l')"></span>
+                    <span th:text="${note.engagement}"></span>
+                </span>
+            </div>
+        </div>
+        <div class="note-preview" th:text="${note.finalApprovedNote}"></div>
+        <div class="note-footer">
+            <div class="note-date" th:text="'Dated: ' + ${note.sessionDate}"></div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
