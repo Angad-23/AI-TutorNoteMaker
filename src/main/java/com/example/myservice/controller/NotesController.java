@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.myservice.repository.TutorUserRepository;
+import java.util.List;
 
 @Controller
 @RequestMapping("/notes")
@@ -27,37 +28,67 @@ public class NotesController {
         this.tutorUserRepository = tutorUserRepository;
     }
 
-    // 🌟 GET: ONLY displays the page and reads from the DB. No saving allowed here!
+    // Helper helper strategy to extract the full profile name of the logged-in user securely
+    private String getLoggedInTutorName(UserDetails userDetails) {
+        if (userDetails != null) {
+            return tutorUserRepository.findByUsername(userDetails.getUsername())
+                    .map(tutor -> tutor.getFullName())
+                    .orElse("Unknown Tutor");
+        }
+        return "Unknown Tutor";
+    }
+
+    // 🌟 GET: Main Workplace Dashboard Form
     @GetMapping
     public String showForm(@AuthenticationPrincipal UserDetails userDetails,
                            @RequestParam(value = "success", required = false) String success,
                            Model model) {
         SessionRequest sessionRequest = new SessionRequest();
+        String currentTutor = getLoggedInTutorName(userDetails);
 
-        // ✅ Auto-fill tutor name from logged-in account
-        if (userDetails != null) {
-            tutorUserRepository.findByUsername(userDetails.getUsername())
-                    .ifPresent(tutor -> sessionRequest.setTutorName(tutor.getFullName()));
-        }
+        sessionRequest.setTutorName(currentTutor);
 
         model.addAttribute("sessionRequest", sessionRequest);
-        model.addAttribute("savedNotes", noteRepository.findTop5ByOrderByCreatedAtDesc());
+        // ✅ SECURED: Only displays this specific tutor's top 5 recent notes
+        model.addAttribute("savedNotes", noteRepository.findTop5ByTutorNameOrderByCreatedAtDesc(currentTutor));
+
         if ("true".equals(success)) model.addAttribute("saveSuccess", true);
         return "tutor-form";
     }
 
+    // 🌟 GET: Clean, Sorted User History View
+    @GetMapping("/history")
+    public String viewNotesHistory(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        System.out.println(">>> [DEBUG] /notes/history endpoint was successfully hit!");
+
+        String currentTutor = getLoggedInTutorName(userDetails);
+        System.out.println(">>> [DEBUG] Fetching exclusive history records for: " + currentTutor);
+
+        // ✅ SECURED: Using the isolated user lookup query method
+        List<SessionNote> savedNotes = noteRepository.findAllByTutorNameOrderByCreatedAtDesc(currentTutor);
+
+        System.out.println(">>> [DEBUG] Total records retrieved from MySQL: " + (savedNotes != null ? savedNotes.size() : 0));
+
+        model.addAttribute("savedNotes", savedNotes);
+        return "notes-history";
+    }
+
     // 🌟 POST: Generates the initial draft text from Groq AI
     @PostMapping("/generate")
-    public String generateNote(@ModelAttribute SessionRequest sessionRequest, Model model) {
+    public String generateNote(@AuthenticationPrincipal UserDetails userDetails,
+                               @ModelAttribute SessionRequest sessionRequest,
+                               Model model) {
         String result = openAiService.generateSessionNote(sessionRequest);
+        String currentTutor = getLoggedInTutorName(userDetails);
+
         model.addAttribute("generatedNote", result);
         model.addAttribute("sessionRequest", sessionRequest);
-        model.addAttribute("savedNotes", noteRepository.findTop5ByOrderByCreatedAtDesc()
-        ); // Keeps table visible
+        // ✅ SECURED: Keeps recent items matching the login profile
+        model.addAttribute("savedNotes", noteRepository.findTop5ByTutorNameOrderByCreatedAtDesc(currentTutor));
         return "tutor-form";
     }
 
-    // 🌟 POST: The ONLY place where data is written to the database
+    // 🌟 POST: Saves details securely to your MySQL engine backend
     @PostMapping("/approve")
     public String approveAndSaveNote(
             @RequestParam("finalApprovedNote") String finalApprovedNote,
@@ -69,6 +100,7 @@ public class NotesController {
             @RequestParam("tutorName") String tutorName,
             @RequestParam("sessionDate") String sessionDate,
             @RequestParam("districtOrState") String districtOrState,
+            @RequestParam(value = "noteType", defaultValue = "Single") String noteType,
             Model model) {
 
         SessionNote note = new SessionNote();
@@ -81,12 +113,10 @@ public class NotesController {
         note.setTutorName(tutorName);
         note.setSessionDate(sessionDate);
         note.setDistrictOrState(districtOrState);
+//        note.setNoteType(noteType);
 
-        // This line runs EXCLUSIVELY when the green button is clicked
         noteRepository.save(note);
 
-        // 🌟 Post-Redirect-Get pattern workaround for demo:
-        // We pass the success flag and clear the input form
         return "redirect:/notes?success=true";
     }
 }

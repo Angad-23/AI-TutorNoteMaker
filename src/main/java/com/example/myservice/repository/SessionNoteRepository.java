@@ -8,9 +8,10 @@ import java.util.List;
 
 @Repository
 public interface SessionNoteRepository extends JpaRepository<SessionNote, Long> {
-    // Just extending JpaRepository automatically gives us .save() and .findAll()!
 
-        // Returns only the 5 most recent entries
-        List<SessionNote> findTop5ByOrderByCreatedAtDesc();
+        // 🌟 Secure the 5-item preview table for the logged-in tutor
+        List<SessionNote> findTop5ByTutorNameOrderByCreatedAtDesc(String tutorName);
 
+        // 🌟 Secure the complete historical record list for the logged-in tutor
+        List<SessionNote> findAllByTutorNameOrderByCreatedAtDesc(String tutorName);
 }

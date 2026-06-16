@@ -553,9 +553,17 @@
             background:rgba(255,255,255,.06);">
             Dashboard
         </a>
-
+        <a th:href="@{/notes/history}" style="
+            text-decoration:none;
+            color:rgba(255,255,255,.7);
+            font-size:.78rem; font-weight:700;
+            padding:6px 14px; border-radius:8px;
+            border:1px solid rgba(255,255,255,.1);
+            background:rgba(255,255,255,.06);">
+            View Full History
+        </a>
         <form th:action="@{/logout}" method="post" style="margin:0;">
-<!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" style="
         background:rgba(232,98,42,.15);
         border:1px solid rgba(232,98,42,.3);
@@ -606,6 +614,7 @@
         <div class="draft-inner">
             <div class="draft-hint">Edit freely below — your changes train the AI for better future notes.</div>
             <form th:action="@{/notes/approve}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <textarea id="noteTextarea" name="finalApprovedNote" rows="8" th:text="${generatedNote}"></textarea>
                 <input type="hidden" name="tutorName"       th:value="${sessionRequest.tutorName}" />
                 <input type="hidden" name="sessionDate"     th:value="${sessionRequest.sessionDate}" />
@@ -615,15 +624,15 @@
                 <input type="hidden" name="engagement"      th:value="${sessionRequest.engagement}" />
                 <input type="hidden" name="keyPointers"     th:value="${sessionRequest.keyPointers}" />
                 <input type="hidden" name="districtOrState" th:value="${sessionRequest.districtOrState}" />
+                <input type="hidden" name="noteType" th:value="${noteType}" />
                 <button type="submit" class="btn-save">Save to the Database</button>
             </form>
         </div>
     </div>
 
-    <!-- FORM -->
-    <form th:action="@{/notes/generate}" th:object="${sessionRequest}" method="post">
+    <form id="generateForm" th:action="@{/notes/generate}" th:object="${sessionRequest}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-        <!-- Step 1 -->
         <div class="step-row">
             <div class="step-num">1</div>
             <div class="step-label">Tutor &amp; Student Information</div>
@@ -631,13 +640,10 @@
         </div>
 
         <div class="form-2col">
-            <!-- Tutor Card -->
             <div class="card">
                 <div class="card-head">
-<!--                    <div class="card-head-icon icon-orange">🧑‍🏫</div>-->
                     <div>
                         <div class="card-head-title">Tutor Information</div>
-<!--                        <div class="card-head-sub">Who is conducting this session?</div>-->
                     </div>
                 </div>
                 <div class="card-body">
@@ -652,49 +658,53 @@
                 </div>
             </div>
 
-            <!-- Student Card -->
             <div class="card">
                 <div class="card-head">
-<!--                    <div class="card-head-icon icon-teal">👩‍🎓</div>-->
                     <div>
-                        <div class="card-head-title">Student Information</div>
-<!--                        <div class="card-head-sub">Who are we writing notes for?</div>-->
+                        <div class="card-head-title">Student(s) &amp; Note Details</div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row-2">
                         <div class="field">
-                            <label class="flabel">Student Name <span class="req">*</span></label>
-                            <input type="text" th:field="*{studentName}" class="finput" placeholder="Emily Johnson" required />
+                            <label class="flabel">Student Name(s) <span class="req">*</span></label>
+                            <input type="text" th:field="*{studentName}" class="finput" placeholder="Emily Johnson (or group names)" required />
                         </div>
                         <div class="field">
-                            <label class="flabel">Subject / Topic <span class="req">*</span></label>
-                            <input type="text" th:field="*{subject}" class="finput" placeholder="Algebra" required />
+                            <label class="flabel">Note Type <span class="req">*</span></label>
+                            <select th:field="*{subject}" class="fselect" required>
+                                <option value="Student">Student Note</option>
+                                <option value="Overall">Group Class Note</option>
+                            </select>
                         </div>
                     </div>
                     <div class="row-2" style="margin-top:12px;">
                         <div class="field">
-                            <label class="flabel">Grade Level</label>
-                            <select th:field="*{gradeLevel}" class="fselect">
-                                <option value="Elementary">Elementary (K–5)</option>
-                                <option value="Middle School">Middle School (6–8)</option>
-                                <option value="High School">High School (9–12)</option>
+                            <label class="flabel">State <span class="req">*</span></label>
+                            <select id="stateSelect" th:field="*{districtOrState}" class="fselect" required onchange="loadGrades()">
+                                <option value="">-- Select State --</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Common Core">Common Core</option>
+                                <option value="Maryland">Maryland</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label class="flabel">State / District</label>
-                            <select th:field="*{districtOrState}" class="fselect">
-                                <option value="Maryland">Maryland (MSDE)</option>
-                                <option value="Florida">Florida (CPALMS)</option>
-                                <option value="General">General US</option>
+                            <label class="flabel">Grade Level <span class="req">*</span></label>
+                            <select id="gradeSelect" th:field="*{gradeLevel}" class="fselect" required disabled onchange="loadStandards()">
+                                <option value="">-- Select Grade --</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="field" style="margin-top:12px;">
+                        <label class="flabel">Curriculum Standard <span class="req">*</span></label>
+                        <select id="standardSelect" class="fselect" required disabled>
+                            <option value="">-- Select Specific Standard --</option>
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 2 -->
         <div class="step-row" style="margin-top:8px;">
             <div class="step-num">2</div>
             <div class="step-label">Session Observations</div>
@@ -703,10 +713,8 @@
 
         <div class="card" style="margin-bottom:18px;">
             <div class="card-head">
-<!--                <div class="card-head-icon icon-navy"></div>-->
                 <div>
                     <div class="card-head-title">Engagement &amp; Key Notes</div>
-<!--                    <div class="card-head-sub">Describe how the session went</div>-->
                 </div>
             </div>
             <div class="card-body">
@@ -729,19 +737,18 @@
                         </div>
                     </div>
                     <div class="field" style="grid-column:2/4;">
-                        <label class="flabel">Key Pointers (make sure to keep it in bullets) <span class="req">*</span></label>
+                        <label class="flabel">Key Pointers (Parameters / Specific Moments) <span class="req">*</span></label>
                         <textarea th:field="*{keyPointers}" class="ftextarea" rows="3"
-                                  placeholder="e.g., mastered fractions, struggled with mixed numbers, great questions about real-world use..." required></textarea>
+                                  placeholder="What clicked, mistakes made, recoveries, behavior details..." required></textarea>
                     </div>
                 </div>
                 <div class="field" style="margin-top:4px;">
                     <label class="flabel">Next Steps / Homework</label>
-                    <input type="text" th:field="*{nextSteps}" class="finput" placeholder="e.g., Complete worksheet page 10, review chapter 3" />
+                    <input type="text" th:field="*{nextSteps}" class="finput" placeholder="e.g., Complete worksheet page 10, review division facts" />
                 </div>
             </div>
         </div>
 
-        <!-- Step 3 -->
         <div class="step-row">
             <div class="step-num">3</div>
             <div class="step-label">Generate Your Note</div>
@@ -749,19 +756,21 @@
         </div>
 
         <button type="submit" class="btn-gen">Generate Notes</button>
-
     </form>
 
     <!-- ══ DB TABLE ══ -->
     <div class="db-wrap">
         <div class="db-bar">
             <div>
-                <div class="db-bar-title">Live Feeds</div>
-<!--                <div class="db-bar-sub">Every approved note feeds back into the AI for continuous improvement</div>-->
+                <div class="db-bar-title">Latest Feeds </div>
             </div>
-            <div class="db-count-pill">
-                <div class="ldot"></div>
-<!--                <span th:text="${#lists.size(savedNotes)} + ' entries'">0 entries</span>-->
+
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a th:href="@{/notes/history}" style="color: var(--teal-2); font-size: 0.75rem; font-weight: 700; text-decoration: none;">
+                        See All Notes ➔
+                    </a>
+                </div>
             </div>
         </div>
         <div style="overflow-x:auto;">
@@ -769,7 +778,7 @@
                 <thead>
                 <tr>
                     <th>#</th><th>Tutor</th><th>Student</th><th>District</th>
-                    <th>Subject</th><th>Grade</th><th>Engagement</th><th>Note Preview</th>
+                    <th>Type</th><th>Grade</th><th>Engagement</th><th>Note Preview</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -831,6 +840,70 @@
             setTimeout(() => { b.textContent = 'Copy Note'; b.classList.remove('copied'); }, 2000);
         });
     }
+
+    function loadGrades() {
+        const state = document.getElementById("stateSelect").value;
+        const gradeSelect = document.getElementById("gradeSelect");
+        const stdSelect = document.getElementById("standardSelect");
+
+        gradeSelect.innerHTML = '<option value="">-- Select Grade --</option>';
+        stdSelect.innerHTML = '<option value="">-- Select Specific Standard --</option>';
+        stdSelect.disabled = true;
+
+        if (!state) {
+            gradeSelect.disabled = true;
+            return;
+        }
+
+        fetch(`/api/standards/grades?state=${encodeURIComponent(state)}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(g => {
+                    const opt = document.createElement("option");
+                    opt.value = g;
+                    opt.textContent = "Grade " + g;
+                    gradeSelect.appendChild(opt);
+                });
+                gradeSelect.disabled = false;
+            });
+    }
+//----------------added for standards------------------------
+    function loadStandards() {
+        const state = document.getElementById("stateSelect").value;
+        const grade = document.getElementById("gradeSelect").value;
+        const stdSelect = document.getElementById("standardSelect");
+
+        stdSelect.innerHTML = '<option value="">-- Select Specific Standard --</option>';
+
+        if (!grade) {
+            stdSelect.disabled = true;
+            return;
+        }
+
+        fetch(`/api/standards/list?state=${encodeURIComponent(state)}&grade=${encodeURIComponent(grade)}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(std => {
+                    const opt = document.createElement("option");
+                    // Store code + details as the value string so it's passed smoothly
+                    opt.value = `[Standard ${std.code}: ${std.description}]`;
+                    opt.textContent = `${std.code} - ${std.description.substring(0, 65)}...`;
+                    stdSelect.appendChild(opt);
+                });
+                stdSelect.disabled = false;
+            });
+    }
+
+    document.getElementById("generateForm").addEventListener("submit", function(e) {
+        const stdVal = document.getElementById("standardSelect").value;
+        const pointersBox = document.getElementById("keyPointers");
+
+        console.log("Submit fired. Standard value:", stdVal, "Pointers box found:", !!pointersBox);
+
+        if (stdVal && pointersBox) {
+            pointersBox.value = stdVal + "\n\nAdditional Notes:\n" + pointersBox.value;
+        }
+    });
 </script>
 </body>
 </html>

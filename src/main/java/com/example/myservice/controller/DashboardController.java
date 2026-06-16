@@ -67,11 +67,6 @@ public class DashboardController {
                 .map(SessionNote::getSessionDate)
                 .collect(Collectors.toList()));
 
-//        long todayCount = allNotes.stream()
-//                .filter(n -> n.getSessionDate() != null &&
-//                        n.getSessionDate().equals(today))
-//                .count();
-
         // Unique students taught
         long uniqueStudents = allNotes.stream()
                 .map(SessionNote::getStudentName)

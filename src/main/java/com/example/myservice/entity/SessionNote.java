@@ -16,7 +16,11 @@ public class SessionNote {
     private Long id;
 
     private String studentName;
+
+    // 🌟 THE JPA BRIDGE: This maps your Java 'subject' property to the new 'note_type' DB column
+    @Column(name = "note_type")
     private String subject;
+
     private String gradeLevel;
     private String engagement;
     private String tutorName;
@@ -35,4 +39,8 @@ public class SessionNote {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now(java.time.ZoneId.of("Asia/Kolkata"));
     }
+
+//    @Column(name = "note_type")
+//    private String noteType;
+
 }

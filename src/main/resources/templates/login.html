@@ -454,52 +454,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Logo -->
-<!--        <div class="logo-block">-->
-<!--            <div class="logo-img-wrap">-->
-<!--                <img src="/logo.png" alt="MyVirtualTAs" style="width:74px; height:74px; object-fit:contain;">-->
-<!--            </div>-->
-<!--            <div class="logo-name">-->
-<!--                <span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span>-->
-<!--            </div>-->
-<!--            <div class="logo-powered">powered by <span>eurekii</span></div>-->
-<!--        </div>-->
-
-        <!-- Tagline -->
-<!--        <div class="tagline">Generate <span>Professional</span><br>Notes Instantly</div>-->
-<!--        <div class="tagline-sub">-->
-<!--            AI-powered session notes for tutors — aligned to your student's state curriculum, saving hours of manual work every day.-->
-<!--        </div>-->
-
-        <!-- Features -->
-<!--        <div class="features">-->
-<!--            <div class="feat">-->
-<!--                <div class="feat-icon fi-orange">⚡</div>-->
-<!--                <div class="feat-text">-->
-<!--                    <strong>AI Note Generation</strong>-->
-<!--                    Powered by Groq llama-3.1-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="feat">-->
-<!--                <div class="feat-icon fi-teal">🗺️</div>-->
-<!--                <div class="feat-text">-->
-<!--                    <strong>District Aligned</strong>-->
-<!--                    Maryland MSDE & Florida CPALMS-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="feat">-->
-<!--                <div class="feat-icon fi-navy">🔄</div>-->
-<!--                <div class="feat-text">-->
-<!--                    <strong>Self-Improving AI</strong>-->
-<!--                    Learns from every saved note-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--        </div>-->
-
     </div>
-<!--    <div class="left-footer">© 2026 Trivium Education Services Pvt. Ltd.</div>-->
 </div>
 
 
@@ -517,6 +472,7 @@
 
         <!-- Login Form -->
         <form th:action="@{/login}" method="post">
+<!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
             <div class="field">
                 <label class="flabel">Username</label>
                 <input type="text" name="username" class="finput"
