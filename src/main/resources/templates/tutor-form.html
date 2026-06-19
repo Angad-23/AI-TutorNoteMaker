@@ -612,7 +612,7 @@
             <button type="button" class="btn-copy" id="copyBtn" onclick="copyNote()">Copy Note</button>
         </div>
         <div class="draft-inner">
-            <div class="draft-hint">Edit freely below — your changes train the AI for better future notes.</div>
+<!--            <div class="draft-hint">Edit freely below — your changes train the AI for better future notes.</div>-->
             <form th:action="@{/notes/approve}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <textarea id="noteTextarea" name="finalApprovedNote" rows="8" th:text="${generatedNote}"></textarea>
@@ -624,7 +624,8 @@
                 <input type="hidden" name="engagement"      th:value="${sessionRequest.engagement}" />
                 <input type="hidden" name="keyPointers"     th:value="${sessionRequest.keyPointers}" />
                 <input type="hidden" name="districtOrState" th:value="${sessionRequest.districtOrState}" />
-                <input type="hidden" name="noteType" th:value="${noteType}" />
+                <input type="hidden" name="noteType"        th:value="${sessionRequest.subject}" />
+                <input type="hidden" name="curriculumStandard"  th:value="${sessionRequest.curriculumStandard}" />
                 <button type="submit" class="btn-save">Save to the Database</button>
             </form>
         </div>
@@ -632,24 +633,28 @@
 
     <form id="generateForm" th:action="@{/notes/generate}" th:object="${sessionRequest}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" id="selectedStandardHidden" name="curriculumStandard" value="" />
 
+        <!-- ── STEP 1 ── -->
         <div class="step-row">
             <div class="step-num">1</div>
-            <div class="step-label">Tutor &amp; Student Information</div>
+            <div class="step-label">Session Information</div>
             <div class="step-line"></div>
         </div>
 
+        <!-- Row 1: Tutor Info + Student Info (2 cols) -->
         <div class="form-2col">
+
+            <!-- Card A: Tutor -->
             <div class="card">
                 <div class="card-head">
-                    <div>
-                        <div class="card-head-title">Tutor Information</div>
-                    </div>
+                    <div class="card-head-title">Tutor Information</div>
                 </div>
                 <div class="card-body">
                     <div class="field">
                         <label class="flabel">Tutor Name <span class="req">*</span></label>
-                        <input type="text" th:field="*{tutorName}" class="finput" placeholder="e.g., Ms. Jennifer Lee" required />
+                        <input type="text" th:field="*{tutorName}" class="finput"
+                               readonly style="background:#E8EDF5; color:var(--muted); cursor:not-allowed;" />
                     </div>
                     <div class="field">
                         <label class="flabel">Session Date <span class="req">*</span></label>
@@ -658,44 +663,65 @@
                 </div>
             </div>
 
+            <!-- Card B: Student & Note Type -->
             <div class="card">
                 <div class="card-head">
-                    <div>
-                        <div class="card-head-title">Student(s) &amp; Note Details</div>
-                    </div>
+                    <div class="card-head-title">Student(s) &amp; Note Type</div>
                 </div>
                 <div class="card-body">
-                    <div class="row-2">
-                        <div class="field">
-                            <label class="flabel">Student Name(s) <span class="req">*</span></label>
-                            <input type="text" th:field="*{studentName}" class="finput" placeholder="Emily Johnson (or group names)" required />
-                        </div>
-                        <div class="field">
-                            <label class="flabel">Note Type <span class="req">*</span></label>
-                            <select th:field="*{subject}" class="fselect" required>
-                                <option value="Student">Student Note</option>
-                                <option value="Overall">Group Class Note</option>
-                            </select>
-                        </div>
+                    <div class="field">
+                        <label class="flabel">Student Name(s) <span class="req">*</span></label>
+                        <input type="text" th:field="*{studentName}" class="finput"
+                               placeholder="e.g. Emily Johnson  — or  Zoe, Ethan, Lily" required />
                     </div>
-                    <div class="row-2" style="margin-top:12px;">
-                        <div class="field">
-                            <label class="flabel">State <span class="req">*</span></label>
-                            <select id="stateSelect" th:field="*{districtOrState}" class="fselect" required onchange="loadGrades()">
-                                <option value="">-- Select State --</option>
-                                <option value="Florida">Florida</option>
-                                <option value="Common Core">Common Core</option>
-                                <option value="Maryland">Maryland</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label class="flabel">Grade Level <span class="req">*</span></label>
-                            <select id="gradeSelect" th:field="*{gradeLevel}" class="fselect" required disabled onchange="loadStandards()">
-                                <option value="">-- Select Grade --</option>
-                            </select>
-                        </div>
+                    <div class="field">
+                        <label class="flabel">Note Type <span class="req">*</span></label>
+                        <select th:field="*{subject}" class="fselect" required>
+                            <option value="Student">Student Note</option>
+                            <option value="Overall">Group Class Note</option>
+                        </select>
                     </div>
-                    <div class="field" style="margin-top:12px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-label">Standard Selection</div>
+            <div class="step-line"></div>
+        </div>
+
+        <!-- Card C: Curriculum Context — full width -->
+        <div class="card" style="margin-bottom:18px;">
+            <div class="card-head">
+                <div>
+                    <div class="card-head-title">Curriculum Context</div>
+                    <div class="card-head-sub">Select the state, grade level and specific standard covered in session</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="form-3col">
+                    <div class="field">
+                        <label class="flabel">State <span class="req">*</span></label>
+                        <select id="stateSelect" th:field="*{districtOrState}"
+                                class="fselect" required onchange="loadGrades()">
+                            <option value="">-- Select State --</option>
+                            <option value="Florida">Florida</option>
+                            <option value="Common Core">Common Core</option>
+                            <option value="Maryland">Maryland</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="flabel">
+                            <span id="gradeLabelText">Grade Level</span>
+                            <span class="req">*</span>
+                        </label>
+                        <select id="gradeSelect" th:field="*{gradeLevel}"
+                                class="fselect" required disabled onchange="loadStandards()">
+                            <option value="">-- Select Grade --</option>
+                        </select>
+                    </div>
+                    <div class="field">
                         <label class="flabel">Curriculum Standard <span class="req">*</span></label>
                         <select id="standardSelect" class="fselect" required disabled>
                             <option value="">-- Select Specific Standard --</option>
@@ -706,7 +732,7 @@
         </div>
 
         <div class="step-row" style="margin-top:8px;">
-            <div class="step-num">2</div>
+            <div class="step-num">3</div>
             <div class="step-label">Session Observations</div>
             <div class="step-line"></div>
         </div>
@@ -777,14 +803,21 @@
             <table class="dbt">
                 <thead>
                 <tr>
-                    <th>#</th><th>Tutor</th><th>Student</th><th>District</th>
-                    <th>Type</th><th>Grade</th><th>Engagement</th><th>Note Preview</th>
+                    <th>#</th>
+<!--                    <th>Tutor</th>-->
+                    <th>Student(s)</th>
+                    <th>District</th>
+                    <th>Type</th>
+                    <th>Grade</th>
+                    <th>Standard</th>
+                    <th>Engagement</th>
+                    <th>Note Preview</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="n : ${savedNotes}">
-                    <td class="idc"  th:text="${n.id}"></td>
-                    <td th:text="${n.tutorName != null ? n.tutorName : '—'}"></td>
+                <tr th:each="n, iterStat : ${savedNotes}">
+                    <td class="idc"  th:text="${iterStat.count}"></td>
+<!--                    <td th:text="${n.tutorName != null ? n.tutorName : '—'}"></td>-->
                     <td th:text="${n.studentName}"></td>
                     <td>
                         <span class="dbadge"
@@ -793,6 +826,7 @@
                     </td>
                     <td th:text="${n.subject}"></td>
                     <td th:text="${n.gradeLevel}"></td>
+                    <td class="notec" th:text="${n.curriculumStandard}"></td>
                     <td>
                         <span class="epill">
                             <span class="epdot" th:classappend="${n.engagement == 'High'} ? 'epdot-h' : (${n.engagement == 'Medium'} ? 'epdot-m' : 'epdot-l')"></span>
@@ -895,13 +929,17 @@
     }
 
     document.getElementById("generateForm").addEventListener("submit", function(e) {
+        const grade = document.getElementById("gradeSelect").value;
+        if (!grade) {
+            e.preventDefault();
+            alert("Please select a Grade Level before generating.");
+            return;
+        }
+
+        // ✅ Send standard as its own field, don't mix into pointers
         const stdVal = document.getElementById("standardSelect").value;
-        const pointersBox = document.getElementById("keyPointers");
-
-        console.log("Submit fired. Standard value:", stdVal, "Pointers box found:", !!pointersBox);
-
-        if (stdVal && pointersBox) {
-            pointersBox.value = stdVal + "\n\nAdditional Notes:\n" + pointersBox.value;
+        if (stdVal) {
+            document.getElementById("selectedStandardHidden").value = stdVal;
         }
     });
 </script>

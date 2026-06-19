@@ -246,6 +246,15 @@
             background:rgba(255,255,255,.06);">
             Dashboard
         </a>
+        <a href="/reset-password" style="
+        text-decoration:none;
+        color:rgba(255,255,255,.7);
+        font-size:.78rem; font-weight:700;
+        padding:6px 14px; border-radius:8px;
+        border:1px solid rgba(255,255,255,.1);
+        background:rgba(255,255,255,.06);">
+        Reset Password
+        </a>
 <!--        <a href="/logout" style="-->
 <!--            text-decoration:none;-->
 <!--            background:rgba(232,98,42,.15);-->
@@ -256,7 +265,7 @@
 <!--            Logout-->
 <!--        </a>-->
         <form th:action="@{/logout}" method="post" style="margin:0;">
-<!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit" style="
         background:rgba(232,98,42,.15);
         border:1px solid rgba(232,98,42,.3);

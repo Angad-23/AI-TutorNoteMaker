@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Controller
 public class AuthController {
@@ -69,5 +71,55 @@ public class AuthController {
         tutorUserRepository.save(tutorUser);
 
         return "redirect:/login?registered=true";
+    }
+
+    // ✅ Show reset password page
+    @GetMapping("/reset-password")
+    public String showResetPage() {
+        return "reset-password";
+    }
+
+    // ✅ Handle reset form submission
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            Model model) {
+
+        // Find the logged-in user
+        var tutor = tutorUserRepository.findByUsername(userDetails.getUsername())
+                .orElse(null);
+
+        if (tutor == null) {
+            model.addAttribute("errorMsg", "User not found.");
+            return "reset-password";
+        }
+
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, tutor.getPassword())) {
+            model.addAttribute("errorMsg", "Current password is incorrect.");
+            return "reset-password";
+        }
+
+        // Check new passwords match
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("errorMsg", "New passwords do not match.");
+            return "reset-password";
+        }
+
+        // Check minimum length
+        if (newPassword.length() < 6) {
+            model.addAttribute("errorMsg", "New password must be at least 6 characters.");
+            return "reset-password";
+        }
+
+        // Save new encoded password
+        tutor.setPassword(passwordEncoder.encode(newPassword));
+        tutorUserRepository.save(tutor);
+
+        model.addAttribute("successMsg", "Password updated successfully!");
+        return "reset-password";
     }
 }

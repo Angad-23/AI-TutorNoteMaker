@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 
 @Configuration
 @EnableWebSecurity
@@ -23,18 +26,20 @@ public class SecurityConfig {
     // ✅ Controls which pages need login and which are public
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        // ✅ This forces CSRF token to be eagerly created BEFORE Thymeleaf renders
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName(null); // null = eager, not lazy
+
         http
+                .csrf(csrf -> csrf
+                                .csrfTokenRequestHandler(requestHandler)
+                        // Keep using default HttpSessionCsrfTokenRepository (no CookieCsrf needed)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login",
-                                "/register",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/*.png",      // ✅ Allow all PNG files
-                                "/*.jpg",      // ✅ Allow all JPG files
-                                "/*.ico",      // ✅ Allow favicon
-                                "/static/**"   // ✅ Allow static folder
+                                "/login", "/register", "/reset-password", "/css/**", "/js/**",
+                                "/images/**", "/*.png", "/*.jpg", "/*.ico", "/static/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -49,6 +54,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
         return http.build();

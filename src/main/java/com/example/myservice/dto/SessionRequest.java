@@ -14,4 +14,6 @@ public class SessionRequest {
     private String tutorName;        // Mapped to Tutor Name text input
     private String sessionDate;      // Mapped to Date selector
     private String noteType;
+    private String curriculumStandard;
+
 }
