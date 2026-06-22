@@ -1,18 +1,163 @@
+//package com.example.myservice.controller;
+//
+//import com.example.myservice.dto.SessionRequest;
+//import com.example.myservice.entity.SessionNote;
+//import com.example.myservice.repository.SessionNoteRepository;
+//import com.example.myservice.service.OpenAiService;
+//import jakarta.servlet.http.HttpSession;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.ui.Model;
+//import org.springframework.web.bind.annotation.*;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import com.example.myservice.repository.TutorUserRepository;
+//import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+//
+//import java.util.List;
+//
+//@Controller
+//@RequestMapping("/notes")
+//public class NotesController {
+//
+//    private final OpenAiService openAiService;
+//    private final SessionNoteRepository noteRepository;
+//    private final TutorUserRepository tutorUserRepository;
+//
+//    public NotesController(OpenAiService openAiService,
+//                           SessionNoteRepository noteRepository,
+//                           TutorUserRepository tutorUserRepository) {
+//        this.openAiService = openAiService;
+//        this.noteRepository = noteRepository;
+//        this.tutorUserRepository = tutorUserRepository;
+//    }
+//
+//    // Helper helper strategy to extract the full profile name of the logged-in user securely
+//    private String getLoggedInTutorName(UserDetails userDetails) {
+//        if (userDetails != null) {
+//            return tutorUserRepository.findByUsername(userDetails.getUsername())
+//                    .map(tutor -> tutor.getFullName())
+//                    .orElse("Unknown Tutor");
+//        }
+//        return "Unknown Tutor";
+//    }
+//
+//    @GetMapping
+//    public String showForm(@AuthenticationPrincipal UserDetails userDetails,
+//                           @RequestParam(value = "success", required = false) String success,
+//                           Model model,
+//                           HttpSession session) {
+//
+//        // ✅ Read from HTTP session
+//        String generatedNote = (String) session.getAttribute("generatedNote");
+//        SessionRequest sessionRequest = (SessionRequest) session.getAttribute("lastSessionRequest");
+//
+//        System.out.println(">>> [SESSION CHECK] generatedNote = " + generatedNote);
+//        System.out.println(">>> [SESSION CHECK] sessionRequest = " + sessionRequest);
+//
+//        if (sessionRequest == null) {
+//            sessionRequest = new SessionRequest();
+//        }
+//
+//        String currentTutor = getLoggedInTutorName(userDetails);
+//        sessionRequest.setTutorName(currentTutor);
+//
+//        if (generatedNote != null) {
+//            model.addAttribute("generatedNote", generatedNote);
+//            // ✅ Clear after use so it doesn't re-show on refresh
+//            session.removeAttribute("generatedNote");
+//            session.removeAttribute("lastSessionRequest");
+//        }
+//
+//        model.addAttribute("sessionRequest", sessionRequest);
+//        model.addAttribute("savedNotes",
+//                noteRepository.findTop5ByTutorNameOrderByCreatedAtDesc(currentTutor));
+//
+//        if ("true".equals(success)) model.addAttribute("saveSuccess", true);
+//        return "tutor-form";
+//    }
+//
+//    // 🌟 GET: Clean, Sorted User History View
+//    @GetMapping("/history")
+//    public String viewNotesHistory(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+//        System.out.println(">>> [DEBUG] /notes/history endpoint was successfully hit!");
+//
+//        String currentTutor = getLoggedInTutorName(userDetails);
+//        System.out.println(">>> [DEBUG] Fetching exclusive history records for: " + currentTutor);
+//
+//        // ✅ SECURED: Using the isolated user lookup query method
+//        List<SessionNote> savedNotes = noteRepository.findAllByTutorNameOrderByCreatedAtDesc(currentTutor);
+//
+//        System.out.println(">>> [DEBUG] Total records retrieved from MySQL: " + (savedNotes != null ? savedNotes.size() : 0));
+//
+//        model.addAttribute("savedNotes", savedNotes);
+//        return "notes-history";
+//    }
+//
+//    // 🌟 POST: Generates the initial draft text from Groq AI
+//    // ✅ FIXED: now follows the POST-Redirect-GET pattern instead of returning
+//    // the view directly. This prevents the browser from caching/resubmitting
+//    // a stale POST (with an outdated CSRF token) when the user reloads the page,
+//    // which was previously causing 403 Forbidden errors until a hard refresh.
+//    @PostMapping("/generate")
+//    public String generateNote(@AuthenticationPrincipal UserDetails userDetails,
+//                               @ModelAttribute SessionRequest sessionRequest,
+//                               HttpSession session) {
+//
+//        String result = openAiService.generateSessionNote(sessionRequest);
+//
+//        // ✅ Store in HTTP session — NOT flash attributes
+//        session.setAttribute("generatedNote", result);
+//        session.setAttribute("lastSessionRequest", sessionRequest);
+//
+//        return "redirect:/notes";
+//    }
+//
+//@PostMapping("/approve")
+//public String approveAndSaveNote(
+//        @RequestParam("finalApprovedNote") String finalApprovedNote,
+//        @RequestParam(value = "noteType", defaultValue = "Student") String noteType,  // ✅ was "subject"
+//        @RequestParam(value = "keyPointers",     defaultValue = "") String keyPointers,
+//        @RequestParam(value = "studentName",     defaultValue = "") String studentName,
+//        @RequestParam(value = "gradeLevel",      defaultValue = "") String gradeLevel,
+//        @RequestParam(value = "engagement",      defaultValue = "") String engagement,
+//        @RequestParam(value = "tutorName",       defaultValue = "") String tutorName,
+//        @RequestParam(value = "sessionDate",     defaultValue = "") String sessionDate,
+//        @RequestParam(value = "districtOrState", defaultValue = "") String districtOrState,
+//        @RequestParam(value = "curriculumStandard",  defaultValue = "") String curriculumStandard,
+//        Model model) {
+//
+//    SessionNote note = new SessionNote();
+//    note.setStudentName(studentName);
+//    note.setSubject(noteType);          // ✅ maps to note_type column
+//    note.setGradeLevel(gradeLevel);
+//    note.setEngagement(engagement);
+//    note.setRawPointers(keyPointers);
+//    note.setFinalApprovedNote(finalApprovedNote);
+//    note.setTutorName(tutorName);
+//    note.setSessionDate(sessionDate);
+//    note.setDistrictOrState(districtOrState);
+//    note.setCurriculumStandard(curriculumStandard); // ✅ NEW
+//
+//
+//    noteRepository.save(note);
+//    return "redirect:/notes?success=true";
+//}
+//}
+
 package com.example.myservice.controller;
 
 import com.example.myservice.dto.SessionRequest;
 import com.example.myservice.entity.SessionNote;
 import com.example.myservice.repository.SessionNoteRepository;
 import com.example.myservice.service.OpenAiService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.myservice.repository.TutorUserRepository;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -31,7 +176,7 @@ public class NotesController {
         this.tutorUserRepository = tutorUserRepository;
     }
 
-    // Helper helper strategy to extract the full profile name of the logged-in user securely
+    // ✅ Get logged-in tutor's full name
     private String getLoggedInTutorName(UserDetails userDetails) {
         if (userDetails != null) {
             return tutorUserRepository.findByUsername(userDetails.getUsername())
@@ -41,18 +186,15 @@ public class NotesController {
         return "Unknown Tutor";
     }
 
+    // ✅ GET: Main form
     @GetMapping
     public String showForm(@AuthenticationPrincipal UserDetails userDetails,
                            @RequestParam(value = "success", required = false) String success,
                            Model model,
                            HttpSession session) {
 
-        // ✅ Read from HTTP session
         String generatedNote = (String) session.getAttribute("generatedNote");
         SessionRequest sessionRequest = (SessionRequest) session.getAttribute("lastSessionRequest");
-
-        System.out.println(">>> [SESSION CHECK] generatedNote = " + generatedNote);
-        System.out.println(">>> [SESSION CHECK] sessionRequest = " + sessionRequest);
 
         if (sessionRequest == null) {
             sessionRequest = new SessionRequest();
@@ -63,7 +205,6 @@ public class NotesController {
 
         if (generatedNote != null) {
             model.addAttribute("generatedNote", generatedNote);
-            // ✅ Clear after use so it doesn't re-show on refresh
             session.removeAttribute("generatedNote");
             session.removeAttribute("lastSessionRequest");
         }
@@ -76,70 +217,109 @@ public class NotesController {
         return "tutor-form";
     }
 
-    // 🌟 GET: Clean, Sorted User History View
+    // ✅ GET: Full history
     @GetMapping("/history")
     public String viewNotesHistory(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        System.out.println(">>> [DEBUG] /notes/history endpoint was successfully hit!");
-
         String currentTutor = getLoggedInTutorName(userDetails);
-        System.out.println(">>> [DEBUG] Fetching exclusive history records for: " + currentTutor);
-
-        // ✅ SECURED: Using the isolated user lookup query method
         List<SessionNote> savedNotes = noteRepository.findAllByTutorNameOrderByCreatedAtDesc(currentTutor);
-
-        System.out.println(">>> [DEBUG] Total records retrieved from MySQL: " + (savedNotes != null ? savedNotes.size() : 0));
-
         model.addAttribute("savedNotes", savedNotes);
         return "notes-history";
     }
 
-    // 🌟 POST: Generates the initial draft text from Groq AI
-    // ✅ FIXED: now follows the POST-Redirect-GET pattern instead of returning
-    // the view directly. This prevents the browser from caching/resubmitting
-    // a stale POST (with an outdated CSRF token) when the user reloads the page,
-    // which was previously causing 403 Forbidden errors until a hard refresh.
+    // ✅ POST: Generate note
     @PostMapping("/generate")
     public String generateNote(@AuthenticationPrincipal UserDetails userDetails,
                                @ModelAttribute SessionRequest sessionRequest,
                                HttpSession session) {
 
+        // ✅ Clear previous session data
+        session.removeAttribute("generatedNote");
+        session.removeAttribute("lastSessionRequest");
+
+        // ✅ Handle Group Class Note student name default
+        String noteType = sessionRequest.getSubject();
+        if ("Overall".equals(noteType) || "Group".equals(noteType)) {
+            String studentName = sessionRequest.getStudentName();
+            if (studentName == null || studentName.trim().isEmpty()) {
+                // Build name from group label or default to "Group"
+                String groupLabel = sessionRequest.getGroupLabel();
+                String numStudents = sessionRequest.getNumberOfStudents();
+
+                if (groupLabel != null && !groupLabel.trim().isEmpty()) {
+                    sessionRequest.setStudentName(groupLabel.trim());
+                } else if (numStudents != null && !numStudents.trim().isEmpty()) {
+                    sessionRequest.setStudentName("Group of " + numStudents.trim() + " students");
+                } else {
+                    sessionRequest.setStudentName("Group");
+                }
+            }
+        }
+
+        // ✅ MERGE: Combine engagementNotes + skillsNotes into keyPointers
+        String engagementNotes = sessionRequest.getEngagementNotes();
+        String skillsNotes     = sessionRequest.getSkillsNotes();
+
+        StringBuilder mergedPointers = new StringBuilder();
+
+        if (engagementNotes != null && !engagementNotes.trim().isEmpty()) {
+            mergedPointers.append("Engagement & Behaviour: ").append(engagementNotes.trim());
+        }
+        if (skillsNotes != null && !skillsNotes.trim().isEmpty()) {
+            if (mergedPointers.length() > 0) mergedPointers.append("\n\n");
+            mergedPointers.append("Skills & Specific Moments: ").append(skillsNotes.trim());
+        }
+
+        sessionRequest.setKeyPointers(mergedPointers.toString());
+
+        System.out.println("=== GENERATE RECEIVED ===");
+        System.out.println("Student:    " + sessionRequest.getStudentName());
+        System.out.println("Engagement: " + sessionRequest.getEngagementNotes());
+        System.out.println("Skills:     " + sessionRequest.getSkillsNotes());
+        System.out.println("Merged:     " + sessionRequest.getKeyPointers());
+        System.out.println("Standard:   " + sessionRequest.getCurriculumStandard());
+        System.out.println("=========================");
+
         String result = openAiService.generateSessionNote(sessionRequest);
 
-        // ✅ Store in HTTP session — NOT flash attributes
         session.setAttribute("generatedNote", result);
         session.setAttribute("lastSessionRequest", sessionRequest);
 
         return "redirect:/notes";
     }
 
-@PostMapping("/approve")
-public String approveAndSaveNote(
-        @RequestParam("finalApprovedNote") String finalApprovedNote,
-        @RequestParam(value = "noteType", defaultValue = "Student") String noteType,  // ✅ was "subject"
-        @RequestParam(value = "keyPointers",     defaultValue = "") String keyPointers,
-        @RequestParam(value = "studentName",     defaultValue = "") String studentName,
-        @RequestParam(value = "gradeLevel",      defaultValue = "") String gradeLevel,
-        @RequestParam(value = "engagement",      defaultValue = "") String engagement,
-        @RequestParam(value = "tutorName",       defaultValue = "") String tutorName,
-        @RequestParam(value = "sessionDate",     defaultValue = "") String sessionDate,
-        @RequestParam(value = "districtOrState", defaultValue = "") String districtOrState,
-        @RequestParam(value = "curriculumStandard",  defaultValue = "") String curriculumStandard,
-        Model model) {
+    // ✅ POST: Save approved note to DB
+    @PostMapping("/approve")
+    public String approveAndSaveNote(
+            @RequestParam("finalApprovedNote")                    String finalApprovedNote,
+            @RequestParam(value = "noteType",        defaultValue = "Student") String noteType,
+            @RequestParam(value = "keyPointers",     defaultValue = "") String keyPointers,
+            @RequestParam(value = "studentName",     defaultValue = "Group") String studentName,
+            @RequestParam(value = "gradeLevel",      defaultValue = "") String gradeLevel,
+            @RequestParam(value = "engagement",      defaultValue = "") String engagement,
+            @RequestParam(value = "tutorName",       defaultValue = "") String tutorName,
+            @RequestParam(value = "sessionDate",     defaultValue = "") String sessionDate,
+            @RequestParam(value = "districtOrState", defaultValue = "") String districtOrState,
+            @RequestParam(value = "curriculumStandard", defaultValue = "") String curriculumStandard,
+            Model model) {
 
-    SessionNote note = new SessionNote();
-    note.setStudentName(studentName);
-    note.setSubject(noteType);          // ✅ maps to note_type column
-    note.setGradeLevel(gradeLevel);
-    note.setEngagement(engagement);
-    note.setRawPointers(keyPointers);
-    note.setFinalApprovedNote(finalApprovedNote);
-    note.setTutorName(tutorName);
-    note.setSessionDate(sessionDate);
-    note.setDistrictOrState(districtOrState);
-    note.setCurriculumStandard(curriculumStandard); // ✅ NEW
+        // ✅ Default student name to "Group" if empty
+        if (studentName == null || studentName.trim().isEmpty()) {
+            studentName = "Group";
+        }
 
+        SessionNote note = new SessionNote();
+        note.setStudentName(studentName);
+        note.setSubject(noteType);
+        note.setGradeLevel(gradeLevel);
+        note.setEngagement(engagement);
+        note.setRawPointers(keyPointers);
+        note.setFinalApprovedNote(finalApprovedNote);
+        note.setTutorName(tutorName);
+        note.setSessionDate(sessionDate);
+        note.setDistrictOrState(districtOrState);
+        note.setCurriculumStandard(curriculumStandard);
 
-    noteRepository.save(note);
-    return "redirect:/notes?success=true";
-}
+        noteRepository.save(note);
+        return "redirect:/notes?success=true";
+    }
 }

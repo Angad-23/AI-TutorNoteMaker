@@ -18,16 +18,6 @@ public class OpenAiService {
     private String API_URL;
 
     public String generateSessionNote(SessionRequest request) {
-        System.out.println("=== DATA RECEIVED FROM UI ===");
-        System.out.println("Student:  " + request.getStudentName());
-        System.out.println("Subject:  " + request.getSubject());
-        System.out.println("State:    " + request.getDistrictOrState());
-        System.out.println("Grade:    " + request.getGradeLevel());
-        System.out.println("Engage:   " + request.getEngagement());
-        System.out.println("Pointers: " + request.getKeyPointers());
-        System.out.println("Next:     " + request.getNextSteps());
-        System.out.println("=============================");
-
         RestTemplate restTemplate = new RestTemplate();
 
         String targetSubject = request.getSubject() != null
@@ -39,7 +29,7 @@ public class OpenAiService {
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "llama-3.1-8b-instant");
-        requestBody.put("max_tokens", 300);
+        requestBody.put("max_tokens", 400);
         requestBody.put("temperature", 0.3);
 
         List<Map<String, String>> messages = new ArrayList<>();
@@ -73,20 +63,18 @@ public class OpenAiService {
     }
 
     private String buildSingleStudentPrompt(SessionRequest request) {
-        String student    = request.getStudentName()     != null ? request.getStudentName()     : "";
-        String engagement = request.getEngagement()      != null ? request.getEngagement()      : "Good";
-        String pointers   = request.getKeyPointers()     != null ? request.getKeyPointers()     : "";
-        String next       = request.getNextSteps()       != null ? request.getNextSteps()       : "";
-        String standard   = request.getCurriculumStandard() != null ? request.getCurriculumStandard() : "";
+        String student        = request.getStudentName()        != null ? request.getStudentName()        : "";
+        String engagementLvl  = request.getEngagement()         != null ? request.getEngagement()         : "Good";
+        String engagementNotes= request.getEngagementNotes()    != null ? request.getEngagementNotes()    : "";
+        String skillsNotes    = request.getSkillsNotes()        != null ? request.getSkillsNotes()        : "";
+        String next           = request.getNextSteps()          != null ? request.getNextSteps()          : "";
+        String standard       = request.getCurriculumStandard() != null ? request.getCurriculumStandard() : "";
 
-        // Build standard description cleanly
-        // Strip the code part e.g. "[Standard MA.4.FR.1.1: Model and express...]"
-        // Keep only the description after the colon
+        // Extract clean description from standard code
         String standardDesc = "";
         if (!standard.isEmpty() && standard.contains(":")) {
             standardDesc = standard.substring(standard.indexOf(":") + 1)
-                    .replace("]", "")
-                    .trim();
+                    .replace("]", "").trim();
         }
 
         return "You are a professional math tutor writing a session note for school officials.\n\n" +
@@ -99,46 +87,55 @@ public class OpenAiService {
 
                 "TONE EXAMPLES (VOICE ONLY — do not copy any math content or names):\n" +
                 "- \"[Student] was really engaged today and picked up the concept quickly. " +
-                "They struggled a bit at first but by the end had a solid grasp of it.\"\n" +
-                "- \"[Student] had a tough session today. They were distracted but still managed " +
-                "to get through the material. I'll keep working with them on this.\"\n\n" +
+                "He/she struggled a bit at first but by the end had a solid grasp of it.\"\n" +
+                "- \"[Student] had a tough session today. He/she was distracted but still managed " +
+                "to get through the material. I'll keep working with him/her on this.\"\n\n" +
 
-                "YOUR TASK — Write ONE paragraph using ONLY these facts:\n\n" +
+                "YOUR TASK — Write ONE paragraph weaving BOTH the behaviour and skills details naturally together:\n\n" +
                 "Student Name: " + student + "\n" +
-                "Engagement Level: " + engagement + "\n" +
-                // ✅ Standard description used to anchor math topic
+                "Student Pronouns: " + request.getPronouns() + "\n" +
+                "Engagement Level: " + engagementLvl + "\n" +
                 "Math Topic / Standard Focus: " + standardDesc + "\n" +
-                "Key Observations / Standard Covered: " + pointers + "\n" +
+                "Engagement & Behaviour: " + engagementNotes + "\n" +
+                "Skills & Specific Moments: " + skillsNotes + "\n" +
                 "Next Steps: " + next + "\n\n" +
 
                 "HARD RULES:\n" +
-                "1. ONLY mention math topics explicitly stated in Key Observations above\n" +
-                "2. NEVER mention rounding, area model, or ANY topic unless in Key Observations\n" +
-                "3. NEVER use names other than: " + student + "\n" +
-                "4. Do NOT copy or paraphrase the tone examples above\n" +
-                "5. Write exactly one paragraph with no line breaks\n" +
-                "6. Write like talking to a colleague — use contractions and show personality\n" +
-                "7. Minimum 3-4 sentences with specific details\n" +
-                "8. NEVER quote standard codes (like 'MA.4.FR.1.1') — use plain language\n" +
-                "9. Math concept MUST come from Key Observations only — never infer from standard code\n\n" +
+                "1. Naturally blend the behaviour observations with the skills/math observations in one flowing paragraph\n" +
+                "2. Math topic MUST come from 'Math Topic / Standard Focus' above\n" +
+                "3. Specific details MUST come from 'Engagement & Behaviour' and 'Skills & Specific Moments'\n" +
+                "4. NEVER invent details not in the data above\n" +
+                "5. NEVER use names other than: " + student + "\n" +
+                "6. Write exactly one paragraph, no line breaks within it\n" +
+                "7. Write like talking to a colleague — contractions, warmth, personality\n" +
+                "8. Minimum 3-4 sentences with specific details\n" +
+                "9. NEVER mention grade level or standard codes\n" +
+                "10. NEVER state engagement as a metric — weave it naturally into the narrative\n" +
+                "11. Always use " + request.getPronouns() + " pronouns for " + student +
+                " — NEVER use they/them unless the pronouns field above says 'they/them'\n\n" +
                 "Write the note now:";
     }
 
     private String buildGroupSessionPrompt(SessionRequest request) {
-        String students   = request.getStudentName()     != null ? request.getStudentName()     : "";
-        String engagement = request.getEngagement()      != null ? request.getEngagement()      : "Good";
-        String pointers   = request.getKeyPointers()     != null ? request.getKeyPointers()     : "";
-        String next       = request.getNextSteps()       != null ? request.getNextSteps()       : "";
-        String standard   = request.getCurriculumStandard() != null ? request.getCurriculumStandard() : "";
+        String students       = request.getStudentName()        != null ? request.getStudentName()        : "Group";
+        String engagementLvl  = request.getEngagement()         != null ? request.getEngagement()         : "Good";
+        String engagementNotes= request.getEngagementNotes()    != null ? request.getEngagementNotes()    : "";
+        String skillsNotes    = request.getSkillsNotes()        != null ? request.getSkillsNotes()        : "";
+        String next           = request.getNextSteps()          != null ? request.getNextSteps()          : "";
+        String standard       = request.getCurriculumStandard() != null ? request.getCurriculumStandard() : "";
+        String numStudents    = request.getNumberOfStudents()   != null ? request.getNumberOfStudents()   : "";
 
-        // Build standard description cleanly
-        // Strip the code part e.g. "[Standard MA.4.FR.1.1: Model and express...]"
-        // Keep only the description after the colon
         String standardDesc = "";
         if (!standard.isEmpty() && standard.contains(":")) {
             standardDesc = standard.substring(standard.indexOf(":") + 1)
-                    .replace("]", "")
-                    .trim();
+                    .replace("]", "").trim();
+        }
+
+        // Build group description
+        String groupDesc = students;
+        if (!numStudents.isEmpty()) {
+            groupDesc = "a group of " + numStudents + " students" +
+                    (!"Group".equals(students) ? " (" + students + ")" : "");
         }
 
         return "You are a math tutor writing a group session note for school officials.\n\n" +
@@ -146,7 +143,7 @@ public class OpenAiService {
                 "VOICE & TONE RULES:\n" +
                 "- First-person, past tense, casual tutor-to-tutor voice\n" +
                 "- Exactly ONE paragraph, no headers, no bullets, no markdown\n" +
-                "- Mention specific games and tools BY NAME if listed in observations\n" +
+                "- Mention specific games and tools BY NAME if listed in skills observations\n" +
                 "- Be honest about individual struggles and group wins\n\n" +
 
                 "TONE EXAMPLE (VOICE ONLY — do not copy content):\n" +
@@ -154,29 +151,32 @@ public class OpenAiService {
                 "The students were engaged overall, though one struggled more than the others. " +
                 "We finished with a Blooket and I'll pick up where we left off next session.\"\n\n" +
 
-                "YOUR TASK — Write ONE paragraph using ONLY these facts:\n\n" +
-                "Student Names: " + students + "\n" +
-                "Engagement Level: " + engagement + "\n" +
-                // ✅ Standard description used to anchor math topic
+                "YOUR TASK — Write ONE paragraph weaving BOTH behaviour and skills details naturally:\n\n" +
+                "Group: " + groupDesc + "\n" +
+                "Engagement Level: " + engagementLvl + "\n" +
                 "Math Topic / Standard Focus: " + standardDesc + "\n" +
-                "Key Observations (activities, games, struggles): " + pointers + "\n" +
+                "Engagement & Behaviour: " + engagementNotes + "\n" +
+                "Skills & Specific Moments: " + skillsNotes + "\n" +
                 "Next Steps: " + next + "\n\n" +
 
                 "HARD RULES:\n" +
-                "1. ONLY mention activities and topics from Key Observations above\n" +
-                "2. Name Blooket, IXL, Penguin Run, or any game if mentioned in observations\n" +
-                "3. Do NOT invent ANY details not explicitly in Key Observations — " +
-                "   this includes math sub-topics, student behaviors, or extra activities\n" + // ✅ stronger
-                "4. ONLY use these student names: " + students + "\n" +
-                "5. Start the note by naming the students — never say 'everyone' or 'the group'\n" + // ✅ new
-                "6. Write exactly one paragraph\n" +
-                "7. NEVER quote standard codes — describe concepts in plain language\n" +
-                "8. Math concept MUST come from Key Observations only\n" +
-                "9. NEVER state engagement as a metric like 'engagement level was high' — " +
-                "   weave it naturally into the narrative instead\n" + // ✅ new
-                "10. NEVER invent math sub-topics like 'mixed numbers' or 'fractions greater than one' " +
-                "    unless explicitly mentioned in Key Observations\n\n"+
-                "11. Do NOT copy phrases verbatim from the standard description — " +
-                "paraphrase the math concept naturally in tutor language\n"; // ✅ new
+                "1. Naturally blend behaviour observations with skills/math observations\n" +
+                "2. Name Blooket, IXL, Penguin Run, or any game if mentioned in Skills observations\n" +
+                "3. Do NOT invent activities or details not in the data above\n" +
+                "4. Math concept MUST come from Skills & Specific Moments and Standard Focus only\n" +
+                "5. Write exactly one paragraph\n" +
+                "6. NEVER quote standard codes — describe concepts in plain language\n" +
+                "7. NEVER state engagement as a metric — describe it naturally\n" +
+                "8. NEVER mention grade level\n\n" +
+                "9. NEVER use 'they', 'them', 'their' to refer to a single individual student — " +
+                "instead say 'one student', 'another student', 'this student', or use their name if known\n" +
+                "10. 'they/them/their' is ONLY acceptable when referring to the WHOLE GROUP together — " +
+                "never for one individual person\n\n"+
+                "11. NEVER end with a generic summary sentence like 'Overall it was a productive session' — " +
+                "end with something specific about next steps or a specific moment instead\n" +
+                "12. Use plain everyday tutor language — avoid formal academic words like " +
+                "'automaticity', 'fluency', 'demonstrated proficiency' — say 'nailed it', " +
+                "'really got the hang of it', 'crushed it' instead\n\n" +
+                "Write the group session note now:";
     }
 }
