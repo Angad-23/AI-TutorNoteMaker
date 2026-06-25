@@ -21,7 +21,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Show login page
+    // Show login page
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(value = "error", required = false) String error,
@@ -34,14 +34,14 @@ public class AuthController {
         return "login";
     }
 
-    // ✅ Show register page
+    // Show register page
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("tutorUser", new TutorUser());
         return "register";
     }
 
-    // ✅ Handle registration form submission
+    // Handle registration form submission
     @PostMapping("/register")
     public String registerTutor(@ModelAttribute TutorUser tutorUser,
                                 @RequestParam String confirmPassword,
@@ -73,13 +73,13 @@ public class AuthController {
         return "redirect:/login?registered=true";
     }
 
-    // ✅ Show reset password page
+    // Show reset password page
     @GetMapping("/reset-password")
     public String showResetPage() {
         return "reset-password";
     }
 
-    // ✅ Handle reset form submission
+    // Handle reset form submission
     @PostMapping("/reset-password")
     public String resetPassword(
             @AuthenticationPrincipal UserDetails userDetails,

@@ -13,18 +13,18 @@ public class SessionRequest {
     private String districtOrState;
     private String gradeLevel;
 
-    // ✅ SPLIT: was single keyPointers — now two separate fields
+    // SPLITING:
     private String engagementNotes;   // Engagement & Behaviour input
     private String skillsNotes;       // Skills & Specific Moments input
 
-    // ✅ Keep for backward compatibility (will be merged from above two)
+    // Keep for backward compatibility (will be merged from above two)
     private String keyPointers;
 
     private String nextSteps;
     private String engagement;        // High / Medium / Low radio
     private String curriculumStandard;
 
-    // ✅ NEW: Group Class Note fields
+    // Group Class Note fields
     private String numberOfStudents;  // e.g. "5"
     private String groupLabel;        // e.g. "Group A" (optional)
 

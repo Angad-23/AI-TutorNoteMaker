@@ -23,11 +23,11 @@ public class SecurityConfig {
         this.tutorUserRepository = tutorUserRepository;
     }
 
-    // ✅ Controls which pages need login and which are public
+    // Controls which pages need login and which are public
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // ✅ This forces CSRF token to be eagerly created BEFORE Thymeleaf renders
+        // This forces CSRF token to be eagerly created BEFORE Thymeleaf renders
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName(null); // null = eager, not lazy
 
@@ -60,7 +60,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ Loads tutor from DB by username for authentication
+    // Loads tutor from DB by username for authentication
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> tutorUserRepository.findByUsername(username)
@@ -72,7 +72,7 @@ public class SecurityConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-    // ✅ BCrypt password encoder — never stores plain text passwords
+    // BCrypt password encoder — never stores plain text passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

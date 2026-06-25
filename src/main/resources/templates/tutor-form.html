@@ -239,7 +239,7 @@
             <div class="card-head">
                 <div>
                     <div class="card-head-title">Curriculum Context</div>
-                    <div class="card-head-sub">Select the state, grade level and standard covered in this session</div>
+<!--                    <div class="card-head-sub">Select the state, grade level and standard covered in this session</div>-->
                 </div>
             </div>
             <div class="card-body">
@@ -325,7 +325,7 @@
 
                 <!-- Next Steps -->
                 <div class="field" style="margin-top:16px;">
-                    <label class="flabel">Next Steps / Homework</label>
+                    <label class="flabel">Next Steps / Homework (optional)</label>
                     <input type="text" th:field="*{nextSteps}" class="finput"
                            placeholder="e.g. Complete worksheet page 10, move on to quadrilateral classification" />
                 </div>
@@ -339,7 +339,7 @@
             <div class="step-line"></div>
         </div>
 
-        <button type="submit" class="btn-gen">⚡ Generate Notes</button>
+        <button type="submit" class="btn-gen">Generate Note</button>
     </form>
 
     <!-- LATEST FEEDS -->
@@ -351,7 +351,7 @@
         <div style="overflow-x:auto;">
             <table class="dbt">
                 <thead>
-                <tr><th>#</th><th>Student</th><th>District</th><th>Type</th><th>Grade</th><th>Standard</th><th>Engagement</th><th>Note Preview</th></tr>
+                <tr><th>S.No.</th><th>Name</th><th>District</th><th>Type</th><th>Grade</th><th>Standard</th><th>Engagement</th><th>Note Preview</th></tr>
                 </thead>
                 <tbody>
                 <tr th:each="n, iterStat : ${savedNotes}">

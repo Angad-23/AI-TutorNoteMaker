@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface SessionNoteRepository extends JpaRepository<SessionNote, Long> {
 
-        // 🌟 Secure the 5-item preview table for the logged-in tutor
+        // Secure the 5-item preview table for the logged-in tutor
         List<SessionNote> findTop5ByTutorNameOrderByCreatedAtDesc(String tutorName);
 
-        // 🌟 Secure the complete historical record list for the logged-in tutor
+        // Secure the complete historical record list for the logged-in tutor
         List<SessionNote> findAllByTutorNameOrderByCreatedAtDesc(String tutorName);
 }

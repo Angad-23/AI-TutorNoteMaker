@@ -40,7 +40,7 @@ public class SessionNote {
         this.createdAt = LocalDateTime.now(java.time.ZoneId.of("Asia/Kolkata"));
     }
 
-    // ✅ ADD THIS — stores the selected curriculum standard
+    // Stores the selected curriculum standard
     @Column(name = "curriculum_standard", columnDefinition = "text")
     private String curriculumStandard;
 

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>MyVirtualTAs — Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -237,15 +236,15 @@
             <div class="pulse"></div>
             Connected
         </div>
-        <a href="/dashboard" style="
-            text-decoration:none;
-            color:rgba(255,255,255,.7);
-            font-size:.78rem; font-weight:700;
-            padding:6px 14px; border-radius:8px;
-            border:1px solid rgba(255,255,255,.1);
-            background:rgba(255,255,255,.06);">
-            Dashboard
-        </a>
+<!--        <a href="/dashboard" style="-->
+<!--            text-decoration:none;-->
+<!--            color:rgba(255,255,255,.7);-->
+<!--            font-size:.78rem; font-weight:700;-->
+<!--            padding:6px 14px; border-radius:8px;-->
+<!--            border:1px solid rgba(255,255,255,.1);-->
+<!--            background:rgba(255,255,255,.06);">-->
+<!--            Dashboard-->
+<!--        </a>-->
         <a th:href="@{/notes/history}" style="text-decoration:none;color:rgba(255,255,255,.7);font-size:.78rem;font-weight:700;padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);">View Full History</a>
         <a href="/reset-password" style="
         text-decoration:none;

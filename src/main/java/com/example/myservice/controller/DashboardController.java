@@ -35,7 +35,7 @@ public class DashboardController {
         TutorUser tutor = tutorUserRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Tutor not found"));
 
-        // ✅ Match by BOTH full name AND username — case insensitive
+        // Match by BOTH full name AND username — case insensitive
         List<SessionNote> allNotes = noteRepository.findAll().stream()
                 .filter(n -> n.getTutorName() != null && (
                         n.getTutorName().equalsIgnoreCase(tutor.getFullName()) ||
@@ -52,13 +52,13 @@ public class DashboardController {
                 .map(SessionNote::getSessionDate)
                 .collect(Collectors.toList()));
 
-// ✅ Notes today
+// Notes today
         long todayCount = allNotes.stream()
                 .filter(n -> n.getSessionDate() != null &&
                         n.getSessionDate().equals(today))
                 .count();
 
-// ✅ DEBUG - put AFTER todayCount
+// DEBUG - put AFTER todayCount
         System.out.println("TODAY IS: " + today);
         System.out.println("ALL NOTES COUNT: " + allNotes.size());
         System.out.println("TUTOR FULL NAME: " + tutor.getFullName());

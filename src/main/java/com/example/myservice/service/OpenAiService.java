@@ -113,6 +113,10 @@ public class OpenAiService {
                 "10. NEVER state engagement as a metric — weave it naturally into the narrative\n" +
                 "11. Always use " + request.getPronouns() + " pronouns for " + student +
                 " — NEVER use they/them unless the pronouns field above says 'they/them'\n\n" +
+                "12. Reference the math topic conversationally — never explain the standard " +
+                "or quote its code\n" +
+                "13. Describe ONLY what is in the observations — never invent problems, " +
+                "concepts, or mistakes not recorded\n\n" +
                 "Write the note now:";
     }
 
@@ -177,6 +181,8 @@ public class OpenAiService {
                 "12. Use plain everyday tutor language — avoid formal academic words like " +
                 "'automaticity', 'fluency', 'demonstrated proficiency' — say 'nailed it', " +
                 "'really got the hang of it', 'crushed it' instead\n\n" +
+                "13. Describe ONLY what is in the observations — never invent problems, " +
+                "concepts, or mistakes not recorded\n\n" +
                 "Write the group session note now:";
     }
 }
