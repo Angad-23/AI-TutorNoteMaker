@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.myservice.repository.TutorUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/notes")
 public class NotesController {
 
+    private static final Logger log = LoggerFactory.getLogger(NotesController.class);
     private final OpenAiService openAiService;
     private final SessionNoteRepository noteRepository;
     private final TutorUserRepository tutorUserRepository;
@@ -125,13 +128,31 @@ public class NotesController {
 
         sessionRequest.setKeyPointers(mergedPointers.toString());
 
-        System.out.println("=== GENERATE RECEIVED ===");
-        System.out.println("Student:    " + sessionRequest.getStudentName());
-        System.out.println("Engagement: " + sessionRequest.getEngagementNotes());
-        System.out.println("Skills:     " + sessionRequest.getSkillsNotes());
-        System.out.println("Merged:     " + sessionRequest.getKeyPointers());
-        System.out.println("Standard:   " + sessionRequest.getCurriculumStandard());
-        System.out.println("=========================");
+        // ✅ SPARSE INPUT CHECK: Block generation if observations are too brief
+        String engTrimmed   = engagementNotes != null ? engagementNotes.trim() : "";
+        String skillsTrimmed = skillsNotes    != null ? skillsNotes.trim()     : "";
+        String combined     = (engTrimmed + " " + skillsTrimmed).trim();
+        int wordCount       = combined.isEmpty() ? 0 : combined.split("\\s+").length;
+
+        if (wordCount < 8) {
+            session.setAttribute("lastSessionRequest", sessionRequest);
+            return "redirect:/notes?error=sparse";
+        }
+
+//        System.out.println("=== GENERATE RECEIVED ===");
+//        System.out.println("Student:    " + sessionRequest.getStudentName());
+//        System.out.println("Engagement: " + sessionRequest.getEngagementNotes());
+//        System.out.println("Skills:     " + sessionRequest.getSkillsNotes());
+//        System.out.println("Merged:     " + sessionRequest.getKeyPointers());
+//        System.out.println("Standard:   " + sessionRequest.getCurriculumStandard());
+//        System.out.println("=========================");
+
+        log.debug("=== GENERATE RECEIVED ===");
+        log.debug("Student:    {}", sessionRequest.getStudentName());
+        log.debug("Engagement: {}", sessionRequest.getEngagementNotes());
+        log.debug("Skills:     {}", sessionRequest.getSkillsNotes());
+        log.debug("Merged:     {}", sessionRequest.getKeyPointers());
+        log.debug("Standard:   {}", sessionRequest.getCurriculumStandard());
 
         String result = openAiService.generateSessionNote(sessionRequest);
 
