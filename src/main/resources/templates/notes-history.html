@@ -39,16 +39,35 @@
         }
         .nav-logo { display: flex; align-items: center; gap: 13px; text-decoration: none; }
         .logo-svg-wrap {
-            width: 40px; height: 40px;
-            background: white; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
+            width: 46px;
+            height: 46px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.2);
         }
         .logo-text-block { line-height: 1.1; }
-        .logo-my      { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem;   color: var(--white); }
-        .logo-virtual { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--orange); }
-        .logo-tas     { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--teal); }
-        .logo-powered { font-size: .58rem; color: rgba(255,255,255,.35); font-weight: 600; letter-spacing: .06em; margin-top: 1px; }
+        .logo-my {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+        .logo-virtual {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--orange);
+        }
+        .logo-tas {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--teal);
+        }.logo-powered { font-size: .58rem; color: rgba(255,255,255,.35); font-weight: 600; letter-spacing: .06em; margin-top: 1px; }
         .logo-powered span { color: rgba(255,255,255,.6); }
 
         .nav-right { display: flex; align-items: center; gap: 10px; }
@@ -273,11 +292,13 @@
 <nav class="topnav">
     <a th:href="@{/dashboard}" class="nav-logo" style="text-decoration:none;">
         <div class="logo-svg-wrap">
-            <img src="/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
+            <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:66px;height:58px;object-fit:contain;">
         </div>
         <div class="logo-text-block">
-            <div><span class="logo-my">My</span><span class="logo-virtual">Virtual</span><span class="logo-tas">TAs</span></div>
-            <div class="logo-powered">powered by <span>eurekii</span></div>
+            <div class="logo-text-block">
+                <div><span class="logo-my">Triv</span><span class="logo-virtual">ekii</span><span class="logo-tas"></span></div>
+                <!--                <div class="logo-powered">powered by <span>eurekii</span></div>-->
+            </div>
         </div>
     </a>
     <div class="nav-right">
