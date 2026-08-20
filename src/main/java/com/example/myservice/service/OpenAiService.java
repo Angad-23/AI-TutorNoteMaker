@@ -33,9 +33,11 @@ public class OpenAiService {
                 : buildSingleStudentPrompt(request);
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "llama-3.3-70b-versatile");
-        requestBody.put("max_tokens", 300);
+        requestBody.put("model", "openai/gpt-oss-120b");
+        requestBody.put("max_tokens", 800);
         requestBody.put("temperature", 0.1);
+        requestBody.put("reasoning_effort", "low");
+        
 
         List<Map<String, String>> messages = new ArrayList<>();
 
@@ -62,13 +64,20 @@ public class OpenAiService {
             ResponseEntity<Map> response = restTemplate.postForEntity(API_URL, entity, Map.class);
             Map<?, ?> responseBody = response.getBody();
 
+            // to check the response from the prompts given
+//            System.out.println("GROQ RAW RESPONSE: " + responseBody);
+
             if (responseBody != null && responseBody.containsKey("choices")) {
                 List<?> choices = (List<?>) responseBody.get("choices");
                 if (!choices.isEmpty()) {
                     Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
                     Map<?, ?> message = (Map<?, ?>) firstChoice.get("message");
+//                    if (message != null && message.containsKey("content")) {
+//                        return (String) message.get("content");
+//                    }
                     if (message != null && message.containsKey("content")) {
-                        return (String) message.get("content");
+                        String rawContent = (String) message.get("content");
+                        return stripThinkingBlock(rawContent);
                     }
                 }
             }
@@ -77,6 +86,11 @@ public class OpenAiService {
             log.error("Error calling Groq API: {}", e.getMessage(), e);
             return "Error generating note: " + e.getMessage();
         }
+    }
+
+    private String stripThinkingBlock(String content) {
+        if (content == null) return content;
+        return content.replaceAll("(?s)<think>.*?</think>", "").trim();
     }
 
     private String buildSingleStudentPrompt(SessionRequest request) {
