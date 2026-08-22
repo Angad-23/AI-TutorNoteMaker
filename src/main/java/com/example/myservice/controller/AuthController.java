@@ -75,7 +75,11 @@ public class AuthController {
 
     // Show reset password page
     @GetMapping("/reset-password")
-    public String showResetPage() {
+    public String showResetPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails != null) {
+            tutorUserRepository.findByUsername(userDetails.getUsername())
+                    .ifPresent(tutor -> model.addAttribute("fullName", tutor.getFullName()));
+        }
         return "reset-password";
     }
 

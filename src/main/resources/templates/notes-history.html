@@ -1,3 +1,453 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>MyVirtualTAs - Session History</title>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">-->
+<!--    <style>-->
+<!--        :root {-->
+<!--            &#45;&#45;navy:      #1A3480;-->
+<!--            &#45;&#45;navy-2:    #142970;-->
+<!--            &#45;&#45;navy-dark: #0A1535;-->
+<!--            &#45;&#45;navy-3:    #0F1F55;-->
+<!--            &#45;&#45;orange:    #E8622A;-->
+<!--            &#45;&#45;orange-2:  #F07842;-->
+<!--            &#45;&#45;teal:      #2BA8BF;-->
+<!--            &#45;&#45;teal-2:    #3DBDD6;-->
+<!--            &#45;&#45;white:     #FFFFFF;-->
+<!--            &#45;&#45;off:       #F5F7FC;-->
+<!--            &#45;&#45;border:    #DDE4F5;-->
+<!--            &#45;&#45;text:      #0A1535;-->
+<!--            &#45;&#45;muted:     #5B6E96;-->
+<!--            &#45;&#45;light:     #8A9BBE;-->
+<!--            &#45;&#45;sidebar-w: 240px;-->
+<!--        }-->
+<!--        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }-->
+<!--        body { font-family: 'Nunito', sans-serif; background: var(&#45;&#45;off); color: var(&#45;&#45;text); min-height: 100vh; }-->
+
+<!--        /* ══ APP SHELL / SIDEBAR ══ */-->
+<!--        .app-shell { display:flex; min-height:100vh; }-->
+<!--        .sidebar {-->
+<!--            width: var(&#45;&#45;sidebar-w);-->
+<!--            flex-shrink: 0;-->
+<!--            background: var(&#45;&#45;navy-dark);-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            position: sticky;-->
+<!--            top: 0;-->
+<!--            height: 100vh;-->
+<!--            box-shadow: 2px 0 24px rgba(10,21,53,.35);-->
+<!--            z-index: 100;-->
+<!--        }-->
+<!--        .sidebar-logo {-->
+<!--            display: flex; align-items: center; gap: 12px;-->
+<!--            padding: 22px 22px 18px;-->
+<!--            border-bottom: 1px solid rgba(255,255,255,.08);-->
+<!--            text-decoration: none;-->
+<!--        }-->
+<!--        .logo-svg-wrap {-->
+<!--            width: 42px; height: 42px; background: white; border-radius: 10px;-->
+<!--            display: flex; align-items: center; justify-content: center;-->
+<!--            padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.2); flex-shrink: 0;-->
+<!--        }-->
+<!--        .logo-text-block { line-height: 1.1; }-->
+<!--        .logo-my { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(&#45;&#45;white); }-->
+<!--        .logo-virtual { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(&#45;&#45;orange); }-->
+<!--        .logo-tas { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(&#45;&#45;teal); }-->
+
+<!--        .sidebar-user {-->
+<!--            display: flex; align-items: center; gap: 10px;-->
+<!--            padding: 18px 22px;-->
+<!--            border-bottom: 1px solid rgba(255,255,255,.08);-->
+<!--        }-->
+<!--        .sidebar-avatar {-->
+<!--            width: 34px; height: 34px; border-radius: 50%;-->
+<!--            background: var(&#45;&#45;orange);-->
+<!--            display: flex; align-items: center; justify-content: center;-->
+<!--            font-size: .82rem; font-weight: 800; color: white;-->
+<!--            flex-shrink: 0;-->
+<!--        }-->
+<!--        .sidebar-username { font-size: .82rem; font-weight: 800; color: rgba(255,255,255,.9); }-->
+<!--        .sidebar-userrole { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.35); margin-top: 1px; }-->
+<!--        .pulse { width:7px; height:7px; border-radius:50%; background:#22C55E; animation:pulse 2s infinite; }-->
+<!--        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }-->
+
+
+<!--        .sidebar-nav { padding: 16px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }-->
+<!--        .snav-label {-->
+<!--            font-size: .62rem; font-weight: 800; color: rgba(255,255,255,.25);-->
+<!--            text-transform: uppercase; letter-spacing: .1em;-->
+<!--            padding: 10px 10px 6px;-->
+<!--        }-->
+<!--        .snav-link {-->
+<!--            display: flex; align-items: center; gap: 11px;-->
+<!--            padding: 10px 12px; border-radius: 9px;-->
+<!--            text-decoration: none; color: rgba(255,255,255,.6);-->
+<!--            font-size: .82rem; font-weight: 700;-->
+<!--            transition: all .15s;-->
+<!--        }-->
+<!--        .snav-icon { width: 18px; text-align: center; font-size: .9rem; flex-shrink: 0; }-->
+<!--        .snav-link:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }-->
+<!--        .snav-link.active {-->
+<!--            background: rgba(232,98,42,.15);-->
+<!--            color: var(&#45;&#45;orange);-->
+<!--            box-shadow: inset 3px 0 0 var(&#45;&#45;orange);-->
+<!--        }-->
+
+<!--        .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }-->
+<!--        .snav-logout {-->
+<!--            width: 100%;-->
+<!--            display: flex; align-items: center; justify-content: center; gap: 8px;-->
+<!--            background: rgba(232,98,42,.12);-->
+<!--            border: 1px solid rgba(232,98,42,.28);-->
+<!--            color: var(&#45;&#45;orange);-->
+<!--            border-radius: 9px;-->
+<!--            padding: 9px 12px;-->
+<!--            font-size: .8rem; font-weight: 800;-->
+<!--            font-family: 'Nunito', sans-serif;-->
+<!--            cursor: pointer; transition: all .15s;-->
+<!--        }-->
+<!--        .snav-logout:hover { background: var(&#45;&#45;orange); color: white; }-->
+
+<!--        .main-area { flex: 1; min-width: 0; }-->
+
+<!--        /* ══ PAGE BODY (unchanged from original) ══ */-->
+<!--        .body-wrap { max-width: 1100px; margin: 36px auto; padding: 0 20px 60px; }-->
+
+<!--        .page-header {-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 28px;-->
+<!--        }-->
+<!--        .page-title-block {}-->
+<!--        .page-eyebrow {-->
+<!--            font-size: .72rem;-->
+<!--            font-weight: 800;-->
+<!--            color: var(&#45;&#45;teal);-->
+<!--            letter-spacing: .08em;-->
+<!--            text-transform: uppercase;-->
+<!--            margin-bottom: 4px;-->
+<!--        }-->
+<!--        .page-title {-->
+<!--            font-family: 'Poppins', sans-serif;-->
+<!--            font-size: 1.7rem;-->
+<!--            font-weight: 800;-->
+<!--            color: var(&#45;&#45;navy-dark);-->
+<!--        }-->
+<!--        .btn-back {-->
+<!--            background: var(&#45;&#45;navy);-->
+<!--            color: white;-->
+<!--            padding: 10px 20px;-->
+<!--            border-radius: 8px;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: 700;-->
+<!--            font-size: .82rem;-->
+<!--            transition: all .15s;-->
+<!--        }-->
+<!--        .btn-back:hover { background: var(&#45;&#45;navy-2); transform: translateY(-1px); }-->
+
+<!--        .history-list { display: flex; flex-direction: column; gap: 16px; }-->
+
+<!--        .note-card {-->
+<!--            background: var(&#45;&#45;white);-->
+<!--            border: 1.5px solid var(&#45;&#45;border);-->
+<!--            border-radius: 16px;-->
+<!--            overflow: hidden;-->
+<!--            box-shadow: 0 2px 12px rgba(26,52,128,.05);-->
+<!--            transition: box-shadow .2s;-->
+<!--        }-->
+<!--        .note-card:hover { box-shadow: 0 6px 24px rgba(26,52,128,.1); }-->
+
+<!--        .card-header {-->
+<!--            background: var(&#45;&#45;navy-3);-->
+<!--            padding: 14px 20px;-->
+<!--            display: grid;-->
+<!--            grid-template-columns: 140px 180px 1fr 90px 120px;-->
+<!--            align-items: center;-->
+<!--            gap: 0;-->
+<!--            border-bottom: 1px solid rgba(255,255,255,.06);-->
+<!--        }-->
+
+<!--        .meta-cell {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            gap: 3px;-->
+<!--            padding-right: 16px;-->
+<!--            border-right: 1px solid rgba(255,255,255,.07);-->
+<!--        }-->
+<!--        .meta-cell:last-child { border-right: none; padding-right: 0; }-->
+<!--        .meta-cell:not(:first-child) { padding-left: 16px; }-->
+
+<!--        .meta-label {-->
+<!--            font-size: .58rem;-->
+<!--            font-weight: 800;-->
+<!--            letter-spacing: .1em;-->
+<!--            text-transform: uppercase;-->
+<!--            color: rgba(255,255,255,.3);-->
+<!--        }-->
+<!--        .meta-value {-->
+<!--            font-size: .82rem;-->
+<!--            font-weight: 700;-->
+<!--            color: rgba(255,255,255,.9);-->
+<!--            white-space: nowrap;-->
+<!--            overflow: hidden;-->
+<!--            text-overflow: ellipsis;-->
+<!--        }-->
+
+<!--        .type-badge {-->
+<!--            display: inline-block;-->
+<!--            padding: 3px 10px;-->
+<!--            border-radius: 6px;-->
+<!--            font-size: .65rem;-->
+<!--            font-weight: 800;-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: .04em;-->
+<!--            width: fit-content;-->
+<!--        }-->
+<!--        .badge-group  { background: var(&#45;&#45;orange);  color: var(&#45;&#45;white); }-->
+<!--        .badge-single { background: var(&#45;&#45;teal);    color: var(&#45;&#45;white); }-->
+
+<!--        .state-pill {-->
+<!--            display: inline-block;-->
+<!--            padding: 3px 10px;-->
+<!--            border-radius: 20px;-->
+<!--            font-size: .7rem;-->
+<!--            font-weight: 800;-->
+<!--            width: fit-content;-->
+<!--        }-->
+<!--        .state-florida { background: rgba(43,168,191,.2); color: var(&#45;&#45;teal-2); border: 1px solid rgba(43,168,191,.3); }-->
+<!--        .state-maryland { background: rgba(26,52,128,.4); color: #7EB3FF; border: 1px solid rgba(126,179,255,.3); }-->
+<!--        .state-common { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }-->
+
+<!--        .grade-circle {-->
+<!--            width: 36px; height: 36px;-->
+<!--            border-radius: 50%;-->
+<!--            background: rgba(255,255,255,.08);-->
+<!--            border: 1.5px solid rgba(255,255,255,.15);-->
+<!--            display: flex; align-items: center; justify-content: center;-->
+<!--            font-family: 'Poppins', sans-serif;-->
+<!--            font-weight: 800;-->
+<!--            font-size: .85rem;-->
+<!--            color: var(&#45;&#45;teal-2);-->
+<!--            margin: auto;-->
+<!--            overflow: hidden;-->
+<!--            flex-shrink: 0;-->
+<!--            white-space: nowrap;-->
+<!--        }-->
+
+<!--        .card-body { padding: 18px 20px; }-->
+
+<!--        .standard-row {-->
+<!--            display: flex;-->
+<!--            align-items: flex-start;-->
+<!--            gap: 8px;-->
+<!--            margin-bottom: 12px;-->
+<!--            padding: 8px 12px;-->
+<!--            background: #F0F4FF;-->
+<!--            border-radius: 8px;-->
+<!--            border-left: 3px solid var(&#45;&#45;navy);-->
+<!--        }-->
+<!--        .standard-icon { font-size: .8rem; margin-top: 1px; flex-shrink: 0; }-->
+<!--        .standard-text {-->
+<!--            font-size: .73rem;-->
+<!--            font-weight: 700;-->
+<!--            color: var(&#45;&#45;navy);-->
+<!--            line-height: 1.4;-->
+<!--        }-->
+
+<!--        .note-label {-->
+<!--            font-size: .68rem;-->
+<!--            font-weight: 800;-->
+<!--            color: var(&#45;&#45;muted);-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: .07em;-->
+<!--            margin-bottom: 8px;-->
+<!--        }-->
+<!--        .note-text {-->
+<!--            font-size: .88rem;-->
+<!--            line-height: 1.65;-->
+<!--            color: #1E293B;-->
+<!--            background: #F8FAFC;-->
+<!--            border: 1.5px solid #E2E8F0;-->
+<!--            padding: 14px 16px;-->
+<!--            border-radius: 10px;-->
+<!--            font-style: italic;-->
+<!--        }-->
+
+<!--        .empty-state {-->
+<!--            text-align: center;-->
+<!--            padding: 80px 20px;-->
+<!--            color: var(&#45;&#45;muted);-->
+<!--        }-->
+<!--        .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: .4; }-->
+<!--        .empty-title { font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(&#45;&#45;navy); }-->
+<!--        .empty-sub { font-size: .83rem; }-->
+
+<!--        /* ══ RESPONSIVE ══ */-->
+<!--        @media (max-width: 860px) {-->
+<!--            .app-shell { flex-direction: column; }-->
+<!--            .sidebar {-->
+<!--                width: 100%; height: auto; position: relative;-->
+<!--                flex-direction: row; align-items: center; justify-content: space-between;-->
+<!--                padding: 10px 16px;-->
+<!--            }-->
+<!--            .sidebar-logo { border-bottom: none; padding: 0; }-->
+<!--            .sidebar-nav, .sidebar-footer { display: none; }-->
+<!--            .card-header {-->
+<!--                grid-template-columns: 1fr 1fr;-->
+<!--                grid-template-rows: auto auto auto;-->
+<!--                gap: 12px;-->
+<!--            }-->
+<!--            .meta-cell { border-right: none; padding: 0; }-->
+<!--            .body-wrap { padding: 0 12px 40px; }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="app-shell">-->
+
+<!--    &lt;!&ndash; ══ SIDEBAR ══ &ndash;&gt;-->
+<!--    <aside class="sidebar">-->
+<!--        <a th:href="@{/dashboard}" class="sidebar-logo">-->
+<!--            <div class="logo-svg-wrap">-->
+<!--                <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:100%;height:100%;object-fit:contain;">-->
+<!--            </div>-->
+<!--            <div class="logo-text-block">-->
+<!--                <div><span class="logo-my">Triv</span><span class="logo-virtual">ekii</span><span class="logo-tas"></span></div>-->
+<!--            </div>-->
+<!--        </a>-->
+
+<!--        <div class="sidebar-user">-->
+<!--            <div class="sidebar-avatar" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${#strings.substring(fullName,0,1)} : 'T'">T</div>-->
+<!--            <div>-->
+<!--                <div class="sidebar-username" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${fullName} : 'Tutor'">Tutor</div>-->
+<!--                <div class="sidebar-userrole"><span class="pulse" style="display:inline-block;margin-right:4px;"></span>Connected</div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <nav class="sidebar-nav">-->
+<!--            <div class="snav-label">Menu</div>-->
+<!--            <a th:href="@{/dashboard}" class="snav-link">-->
+<!--                <span class="snav-icon">⌂</span> Dashboard-->
+<!--            </a>-->
+<!--            <a href="/notes" class="snav-link">-->
+<!--                <span class="snav-icon">✎</span> Generate Note-->
+<!--            </a>-->
+<!--            <a th:href="@{/notes/history}" class="snav-link active">-->
+<!--                <span class="snav-icon">🕘</span> Full History-->
+<!--            </a>-->
+<!--            <a href="/reset-password" class="snav-link">-->
+<!--                <span class="snav-icon">🔒</span> Reset Password-->
+<!--            </a>-->
+<!--        </nav>-->
+
+<!--        <div class="sidebar-footer">-->
+<!--            <form th:action="@{/logout}" method="post" style="margin:0;">-->
+<!--                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+<!--                <button type="submit" class="snav-logout">⏻ Logout</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </aside>-->
+
+<!--    &lt;!&ndash; ══ MAIN AREA ══ &ndash;&gt;-->
+<!--    <div class="main-area">-->
+<!--        <div class="body-wrap">-->
+
+<!--            &lt;!&ndash; Page Header &ndash;&gt;-->
+<!--            <div class="page-header">-->
+<!--                <div class="page-title-block">-->
+<!--                    <div class="page-eyebrow">Session Archive</div>-->
+<!--                    <h1 class="page-title">Saved Session History</h1>-->
+<!--                </div>-->
+<!--                <a href="/notes" class="btn-back">Back to Generator</a>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; History List &ndash;&gt;-->
+<!--            <div class="history-list">-->
+
+<!--                <div th:each="n : ${savedNotes}" class="note-card">-->
+
+<!--                    &lt;!&ndash; ══ METADATA GRID HEADER ══ &ndash;&gt;-->
+<!--                    <div class="card-header">-->
+
+<!--                        &lt;!&ndash; Date &ndash;&gt;-->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">📅 Session Date</span>-->
+<!--                            <span class="meta-value" th:text="${n.sessionDate != null ? n.sessionDate : '—'}"></span>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Student Names &ndash;&gt;-->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">👩‍🎓 Student(s)</span>-->
+<!--                            <span class="meta-value" th:text="${n.studentName != null ? n.studentName : '—'}"></span>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Note Type &ndash;&gt;-->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">📋 Type</span>-->
+<!--                            <span th:if="${n.subject == 'Overall' or n.subject == 'Group' or n.subject == 'Group Class Note'}"-->
+<!--                                  class="type-badge badge-group">Group Class Note</span>-->
+<!--                            <span th:if="${n.subject == 'Student' or n.subject == 'Student Note' or n.subject == 'Single' or n.subject == null}"-->
+<!--                                  class="type-badge badge-single">Student Note</span>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; State &ndash;&gt;-->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">🗺 State</span>-->
+<!--                            <span th:if="${n.districtOrState == 'Florida'}"-->
+<!--                                  class="state-pill state-florida" th:text="${n.districtOrState}"></span>-->
+<!--                            <span th:if="${n.districtOrState == 'Maryland'}"-->
+<!--                                  class="state-pill state-maryland" th:text="${n.districtOrState}"></span>-->
+<!--                            <span th:if="${n.districtOrState == 'Common Core' or n.districtOrState == null}"-->
+<!--                                  class="state-pill state-common"-->
+<!--                                  th:text="${n.districtOrState != null ? n.districtOrState : '—'}"></span>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Grade &ndash;&gt;-->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">Grade</span>-->
+<!--                            <span class="meta-value" th:text="${n.gradeLevel != null ? n.gradeLevel : '—'}"></span>-->
+<!--                        </div>-->
+
+<!--                    </div>-->
+<!--                    &lt;!&ndash; END METADATA GRID &ndash;&gt;-->
+
+<!--                    &lt;!&ndash; ══ CARD BODY ══ &ndash;&gt;-->
+<!--                    <div class="card-body">-->
+
+<!--                        &lt;!&ndash; Standard row (only if present) &ndash;&gt;-->
+<!--                        <div class="standard-row" th:if="${n.curriculumStandard != null and !#strings.isEmpty(n.curriculumStandard)}">-->
+<!--                            <span class="standard-icon">📐</span>-->
+<!--                            <span class="standard-text" th:text="${n.curriculumStandard}"></span>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Note text &ndash;&gt;-->
+<!--                        <div class="note-label">Approved Session Note Artifact:</div>-->
+<!--                        <div class="note-text" th:text="${n.finalApprovedNote}"></div>-->
+
+<!--                    </div>-->
+
+<!--                </div>-->
+<!--                &lt;!&ndash; END note-card &ndash;&gt;-->
+
+<!--                &lt;!&ndash; Empty State &ndash;&gt;-->
+<!--                <div th:if="${#lists.isEmpty(savedNotes)}" class="empty-state">-->
+<!--                    <div class="empty-icon">📋</div>-->
+<!--                    <div class="empty-title">No notes saved yet</div>-->
+<!--                    <div class="empty-sub">Generate and save your first session note to see it here.</div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -20,81 +470,103 @@
             --text:      #0A1535;
             --muted:     #5B6E96;
             --light:     #8A9BBE;
+            --sidebar-w: 240px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Nunito', sans-serif; background: var(--off); color: var(--text); min-height: 100vh; }
 
-        /* ══ TOP NAV ══ */
-        .topnav {
+        /* ══ APP SHELL / SIDEBAR ══ */
+        .app-shell { display:flex; min-height:100vh; }
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
             background: var(--navy-dark);
-            height: 66px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
+            flex-direction: column;
             position: sticky;
             top: 0;
+            height: 100vh;
+            box-shadow: 2px 0 24px rgba(10,21,53,.35);
             z-index: 100;
-            box-shadow: 0 2px 24px rgba(10,21,53,.5);
         }
-        .nav-logo { display: flex; align-items: center; gap: 13px; text-decoration: none; }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 12px;
+            padding: 22px 22px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            text-decoration: none;
+        }
         .logo-svg-wrap {
-            width: 46px;
-            height: 46px;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.2);
+            width: 42px; height: 42px; background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.2); flex-shrink: 0;
         }
         .logo-text-block { line-height: 1.1; }
-        .logo-my {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--white);
-        }
-        .logo-virtual {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--orange);
-        }
-        .logo-tas {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--teal);
-        }.logo-powered { font-size: .58rem; color: rgba(255,255,255,.35); font-weight: 600; letter-spacing: .06em; margin-top: 1px; }
-        .logo-powered span { color: rgba(255,255,255,.6); }
+        .logo-my { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--white); }
+        .logo-virtual { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--orange); }
+        .logo-tas { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--teal); }
 
-        .nav-right { display: flex; align-items: center; gap: 10px; }
-        .nav-btn {
-            text-decoration: none;
-            color: rgba(255,255,255,.7);
-            font-size: .78rem; font-weight: 700;
-            padding: 6px 14px; border-radius: 8px;
-            border: 1px solid rgba(255,255,255,.1);
-            background: rgba(255,255,255,.06);
+        .sidebar-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .sidebar-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--orange);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .82rem; font-weight: 800; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-username { font-size: .82rem; font-weight: 800; color: rgba(255,255,255,.9); }
+        .sidebar-userrole { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.35); margin-top: 1px; }
+        .pulse { width:7px; height:7px; border-radius:50%; background:#22C55E; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+
+        .sidebar-nav { padding: 16px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .snav-label {
+            font-size: .62rem; font-weight: 800; color: rgba(255,255,255,.25);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 10px 10px 6px;
+        }
+        .snav-link {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 12px; border-radius: 9px;
+            text-decoration: none; color: rgba(255,255,255,.6);
+            font-size: .82rem; font-weight: 700;
             transition: all .15s;
         }
-        .nav-btn:hover { background: rgba(255,255,255,.12); color: white; }
-        .nav-btn-primary {
-            background: var(--orange);
-            border-color: var(--orange);
-            color: white;
+        .snav-icon { width: 18px; text-align: center; font-size: .9rem; flex-shrink: 0; }
+        .snav-link:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+        .snav-link.active {
+            background: rgba(232,98,42,.15);
+            color: var(--orange);
+            box-shadow: inset 3px 0 0 var(--orange);
         }
-        .nav-btn-primary:hover { background: var(--orange-2); }
 
-        /* ══ PAGE BODY ══ */
+        .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }
+        .snav-logout {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(232,98,42,.12);
+            border: 1px solid rgba(232,98,42,.28);
+            color: var(--orange);
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-size: .8rem; font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer; transition: all .15s;
+        }
+        .snav-logout:hover { background: var(--orange); color: white; }
+
+        .main-area { flex: 1; min-width: 0; }
+
+        /* ══ PAGE BODY (unchanged from original) ══ */
         .body-wrap { max-width: 1100px; margin: 36px auto; padding: 0 20px 60px; }
 
-        /* ══ PAGE HEADER ══ */
         .page-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: end;
             align-items: center;
             margin-bottom: 28px;
         }
@@ -125,10 +597,26 @@
         }
         .btn-back:hover { background: var(--navy-2); transform: translateY(-1px); }
 
-        /* ══ HISTORY LIST ══ */
+        .btn-export {
+            background: var(--orange);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: .82rem;
+            transition: all .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-right: 10px;
+        }
+        .btn-export:hover { background: var(--orange-2); transform: translateY(-1px); }
+
+        .page-header-actions { display: flex; align-items: center; }
+
         .history-list { display: flex; flex-direction: column; gap: 16px; }
 
-        /* ══ NOTE CARD ══ */
         .note-card {
             background: var(--white);
             border: 1.5px solid var(--border);
@@ -139,12 +627,10 @@
         }
         .note-card:hover { box-shadow: 0 6px 24px rgba(26,52,128,.1); }
 
-        /* ══ CARD HEADER — METADATA GRID ══ */
         .card-header {
             background: var(--navy-3);
             padding: 14px 20px;
             display: grid;
-            /*grid-template-columns: 140px 180px 1fr 90px 56px;*/
             grid-template-columns: 140px 180px 1fr 90px 120px;
             align-items: center;
             gap: 0;
@@ -177,7 +663,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Type badges */
         .type-badge {
             display: inline-block;
             padding: 3px 10px;
@@ -191,7 +676,6 @@
         .badge-group  { background: var(--orange);  color: var(--white); }
         .badge-single { background: var(--teal);    color: var(--white); }
 
-        /* State pill */
         .state-pill {
             display: inline-block;
             padding: 3px 10px;
@@ -204,7 +688,6 @@
         .state-maryland { background: rgba(26,52,128,.4); color: #7EB3FF; border: 1px solid rgba(126,179,255,.3); }
         .state-common { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }
 
-        /* Grade circle */
         .grade-circle {
             width: 36px; height: 36px;
             border-radius: 50%;
@@ -216,14 +699,11 @@
             font-size: .85rem;
             color: var(--teal-2);
             margin: auto;
-            /* ✅ ADD THESE */
             overflow: hidden;
             flex-shrink: 0;
             white-space: nowrap;
-
         }
 
-        /* ══ CARD BODY ══ */
         .card-body { padding: 18px 20px; }
 
         .standard-row {
@@ -263,7 +743,6 @@
             font-style: italic;
         }
 
-        /* ══ EMPTY STATE ══ */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
@@ -274,131 +753,166 @@
         .empty-sub { font-size: .83rem; }
 
         /* ══ RESPONSIVE ══ */
-        @media (max-width: 768px) {
+        @media (max-width: 860px) {
+            .app-shell { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: auto; position: relative;
+                flex-direction: row; align-items: center; justify-content: space-between;
+                padding: 10px 16px;
+            }
+            .sidebar-logo { border-bottom: none; padding: 0; }
+            .sidebar-nav, .sidebar-footer { display: none; }
             .card-header {
                 grid-template-columns: 1fr 1fr;
                 grid-template-rows: auto auto auto;
                 gap: 12px;
             }
             .meta-cell { border-right: none; padding: 0; }
-            .topnav { padding: 0 16px; }
             .body-wrap { padding: 0 12px 40px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ══ TOP NAV ══ -->
-<nav class="topnav">
-    <a th:href="@{/dashboard}" class="nav-logo" style="text-decoration:none;">
-        <div class="logo-svg-wrap">
-            <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:66px;height:58px;object-fit:contain;">
-        </div>
-        <div class="logo-text-block">
+<div class="app-shell">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+        <a th:href="@{/dashboard}" class="sidebar-logo">
+            <div class="logo-svg-wrap">
+                <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:100%;height:100%;object-fit:contain;">
+            </div>
             <div class="logo-text-block">
                 <div><span class="logo-my">Triv</span><span class="logo-virtual">ekii</span><span class="logo-tas"></span></div>
-                <!--                <div class="logo-powered">powered by <span>eurekii</span></div>-->
+            </div>
+        </a>
+
+        <div class="sidebar-user">
+            <div class="sidebar-avatar" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${#strings.substring(fullName,0,1)} : 'T'">T</div>
+            <div>
+                <div class="sidebar-username" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${fullName} : 'Tutor'">Tutor</div>
+                <div class="sidebar-userrole"><span class="pulse" style="display:inline-block;margin-right:4px;"></span>Connected</div>
             </div>
         </div>
-    </a>
-    <div class="nav-right">
-        <a href="/dashboard" class="nav-btn">Dashboard</a>
-        <a href="/notes"     class="nav-btn nav-btn-primary">+ New Note</a>
-    </div>
-</nav>
 
-<!-- ══ BODY ══ -->
-<div class="body-wrap">
+        <nav class="sidebar-nav">
+            <div class="snav-label">Module</div>
+            <a th:href="@{/dashboard}" class="snav-link">
+                <span class="snav-icon"></span> Dashboard
+            </a>
+            <a href="/notes" class="snav-link">
+                <span class="snav-icon"></span> Generate Note
+            </a>
+            <a th:href="@{/notes/history}" class="snav-link active">
+                <span class="snav-icon"></span> Notes History
+            </a>
+            <a href="/reset-password" class="snav-link">
+                <span class="snav-icon"></span> Reset Password
+            </a>
+        </nav>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-title-block">
-            <div class="page-eyebrow">Session Archive</div>
-            <h1 class="page-title">Saved Session History</h1>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="snav-logout">⏻ Logout</button>
+            </form>
         </div>
-        <a href="/notes" class="btn-back">Back to Generator</a>
-    </div>
+    </aside>
 
-    <!-- History List -->
-    <div class="history-list">
+    <!-- ══ MAIN AREA ══ -->
+    <div class="main-area">
+        <div class="body-wrap">
 
-        <div th:each="n : ${savedNotes}" class="note-card">
-
-            <!-- ══ METADATA GRID HEADER ══ -->
-            <div class="card-header">
-
-                <!-- Date -->
-                <div class="meta-cell">
-                    <span class="meta-label">📅 Session Date</span>
-                    <span class="meta-value" th:text="${n.sessionDate != null ? n.sessionDate : '—'}"></span>
-                </div>
-
-                <!-- Student Names -->
-                <div class="meta-cell">
-                    <span class="meta-label">👩‍🎓 Student(s)</span>
-                    <span class="meta-value" th:text="${n.studentName != null ? n.studentName : '—'}"></span>
-                </div>
-
-                <!-- Note Type -->
-                <div class="meta-cell">
-                    <span class="meta-label">📋 Type</span>
-                    <span th:if="${n.subject == 'Overall' or n.subject == 'Group' or n.subject == 'Group Class Note'}"
-                          class="type-badge badge-group">Group Class Note</span>
-                    <span th:if="${n.subject == 'Student' or n.subject == 'Student Note' or n.subject == 'Single' or n.subject == null}"
-                          class="type-badge badge-single">Student Note</span>
-                </div>
-
-                <!-- State -->
-                <div class="meta-cell">
-                    <span class="meta-label">🗺 State</span>
-                    <span th:if="${n.districtOrState == 'Florida'}"
-                          class="state-pill state-florida" th:text="${n.districtOrState}"></span>
-                    <span th:if="${n.districtOrState == 'Maryland'}"
-                          class="state-pill state-maryland" th:text="${n.districtOrState}"></span>
-                    <span th:if="${n.districtOrState == 'Common Core' or n.districtOrState == null}"
-                          class="state-pill state-common"
-                          th:text="${n.districtOrState != null ? n.districtOrState : '—'}"></span>
-                </div>
-
-                <!-- Grade -->
-<!--                <div class="meta-cell">-->
-<!--                    <span class="meta-label" style="text-align:center;">Grade</span>-->
-<!--                    <span class="meta-value" th:text="${n.gradeLevel != null ? n.gradeLevel : '—'}"></span>-->
+            <!-- Page Header -->
+            <div class="page-header">
+<!--                <div class="page-title-block">-->
+<!--                    <div class="page-eyebrow">Session Archive</div>-->
+<!--                    <h1 class="page-title">Saved Session History</h1>-->
 <!--                </div>-->
-                <div class="meta-cell">
-                    <span class="meta-label">Grade</span>
-                    <span class="meta-value" th:text="${n.gradeLevel != null ? n.gradeLevel : '—'}"></span>
+                <div class="page-header-actions">
+                    <a th:href="@{/notes/export/excel}" class="btn-export">Export</a>
+<!--                    <a href="/notes" class="btn-back">Back to Generator</a>-->
+                </div>
+            </div>
+
+            <!-- History List -->
+            <div class="history-list">
+
+                <div th:each="n : ${savedNotes}" class="note-card">
+
+                    <!-- ══ METADATA GRID HEADER ══ -->
+                    <div class="card-header">
+
+                        <!-- Date -->
+                        <div class="meta-cell">
+                            <span class="meta-label">📅 Session Date</span>
+                            <span class="meta-value" th:text="${n.sessionDate != null ? n.sessionDate : '—'}"></span>
+                        </div>
+
+                        <!-- Student Names -->
+                        <div class="meta-cell">
+                            <span class="meta-label">👩‍🎓 Student(s)</span>
+                            <span class="meta-value" th:text="${n.studentName != null ? n.studentName : '—'}"></span>
+                        </div>
+
+                        <!-- Note Type -->
+                        <div class="meta-cell">
+                            <span class="meta-label">📋 Type</span>
+                            <span th:if="${n.subject == 'Overall' or n.subject == 'Group' or n.subject == 'Group Class Note'}"
+                                  class="type-badge badge-group">Group Class Note</span>
+                            <span th:if="${n.subject == 'Student' or n.subject == 'Student Note' or n.subject == 'Single' or n.subject == null}"
+                                  class="type-badge badge-single">Student Note</span>
+                        </div>
+
+                        <!-- State -->
+                        <div class="meta-cell">
+                            <span class="meta-label">🗺 State</span>
+                            <span th:if="${n.districtOrState == 'Florida'}"
+                                  class="state-pill state-florida" th:text="${n.districtOrState}"></span>
+                            <span th:if="${n.districtOrState == 'Maryland'}"
+                                  class="state-pill state-maryland" th:text="${n.districtOrState}"></span>
+                            <span th:if="${n.districtOrState == 'Common Core' or n.districtOrState == null}"
+                                  class="state-pill state-common"
+                                  th:text="${n.districtOrState != null ? n.districtOrState : '—'}"></span>
+                        </div>
+
+                        <!-- Grade -->
+                        <div class="meta-cell">
+                            <span class="meta-label">Grade</span>
+                            <span class="meta-value" th:text="${n.gradeLevel != null ? n.gradeLevel : '—'}"></span>
+                        </div>
+
+                    </div>
+                    <!-- END METADATA GRID -->
+
+                    <!-- ══ CARD BODY ══ -->
+                    <div class="card-body">
+
+                        <!-- Standard row (only if present) -->
+                        <div class="standard-row" th:if="${n.curriculumStandard != null and !#strings.isEmpty(n.curriculumStandard)}">
+                            <span class="standard-icon">📐</span>
+                            <span class="standard-text" th:text="${n.curriculumStandard}"></span>
+                        </div>
+
+                        <!-- Note text -->
+                        <div class="note-label">Approved Session Note Artifact:</div>
+                        <div class="note-text" th:text="${n.finalApprovedNote}"></div>
+
+                    </div>
+
+                </div>
+                <!-- END note-card -->
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(savedNotes)}" class="empty-state">
+                    <div class="empty-title">No notes saved yet</div>
+                    <div class="empty-sub">Generate and save your first session note to see it here.</div>
                 </div>
 
             </div>
-            <!-- END METADATA GRID -->
-
-            <!-- ══ CARD BODY ══ -->
-            <div class="card-body">
-
-                <!-- Standard row (only if present) -->
-                <div class="standard-row" th:if="${n.curriculumStandard != null and !#strings.isEmpty(n.curriculumStandard)}">
-                    <span class="standard-icon">📐</span>
-                    <span class="standard-text" th:text="${n.curriculumStandard}"></span>
-                </div>
-
-                <!-- Note text -->
-                <div class="note-label">Approved Session Note Artifact:</div>
-                <div class="note-text" th:text="${n.finalApprovedNote}"></div>
-
-            </div>
-
         </div>
-        <!-- END note-card -->
-
-        <!-- Empty State -->
-        <div th:if="${#lists.isEmpty(savedNotes)}" class="empty-state">
-            <div class="empty-icon">📋</div>
-            <div class="empty-title">No notes saved yet</div>
-            <div class="empty-sub">Generate and save your first session note to see it here.</div>
-        </div>
-
     </div>
+
 </div>
 
 </body>

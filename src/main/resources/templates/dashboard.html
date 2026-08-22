@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>MyVirtualTAs — Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,33 +13,35 @@
             --text: #0A1931; --muted: #5B6E96;
             --green: #0B7A56; --green-bg: #E6FAF3;
             --r: 12px; --r-lg: 18px;
+            --sidebar-w: 240px;
         }
         body { font-family:'Nunito',sans-serif; background:var(--off); color:var(--text); min-height:100vh; }
 
-        /* ── TOPNAV ── */
-        .topnav {
+        /* ── APP SHELL / SIDEBAR ── */
+        .app-shell { display:flex; min-height:100vh; }
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
             background: var(--navy-dark);
-            height: 66px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
+            flex-direction: column;
             position: sticky;
             top: 0;
+            height: 100vh;
+            box-shadow: 2px 0 24px rgba(10,21,53,.35);
             z-index: 100;
-            box-shadow: 0 2px 24px rgba(10,21,53,.5);
         }
-
-        /* ── LOGO SVG ── */
-        .nav-logo {
+        .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 12px;
+            padding: 22px 22px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            text-decoration: none;
         }
-
         .logo-svg-wrap {
-            width: 46px;
-            height: 46px;
+            width: 42px;
+            height: 42px;
             background: white;
             border-radius: 10px;
             display: flex;
@@ -47,71 +49,71 @@
             justify-content: center;
             padding: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,.2);
+            flex-shrink: 0;
         }
-
         .logo-text-block { line-height: 1.1; }
+        .logo-my { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--white); }
+        .logo-virtual { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--orange); }
+        .logo-tas { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--teal); }
 
-        .logo-icon { width:38px; height:38px; background:white; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:4px; }
-        .logo-my {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--white);
+        .sidebar-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .logo-virtual {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 1.2rem;
+        .sidebar-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--orange);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .82rem; font-weight: 800; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-username { font-size: .82rem; font-weight: 800; color: rgba(255,255,255,.9); }
+        .sidebar-userrole { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.35); margin-top: 1px; }
+        .pulse { width:7px; height:7px; border-radius:50%; background:#22C55E; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+        .sidebar-nav { padding: 16px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .snav-label {
+            font-size: .62rem; font-weight: 800; color: rgba(255,255,255,.25);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 10px 10px 6px;
+        }
+        .snav-link {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            text-decoration: none;
+            color: rgba(255,255,255,.6);
+            font-size: .82rem; font-weight: 700;
+            transition: all .15s;
+        }
+        .snav-icon { width: 18px; text-align: center; font-size: .9rem; flex-shrink: 0; }
+        .snav-link:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+        .snav-link.active {
+            background: rgba(232,98,42,.15);
             color: var(--orange);
+            box-shadow: inset 3px 0 0 var(--orange);
         }
-        .logo-tas {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--teal);
-        }
-        .logo-powered {
-            font-size: .58rem;
-            color: rgba(255,255,255,.35);
-            font-weight: 600;
-            letter-spacing: .06em;
-            margin-top: 1px;
-        }
-        .logo-powered span { color: rgba(255,255,255,.6); }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }
+        .snav-logout {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(232,98,42,.12);
+            border: 1px solid rgba(232,98,42,.28);
+            color: var(--orange);
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-size: .8rem; font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer; transition: all .15s;
         }
-        .nav-user {
-            display:flex; align-items:center; gap:8px;
-            background:rgba(255,255,255,.07);
-            border:1px solid rgba(255,255,255,.1);
-            border-radius:20px; padding:5px 14px 5px 5px;
-        }
-        .nav-avatar {
-            width:28px; height:28px; border-radius:50%;
-            background:var(--orange);
-            display:flex; align-items:center; justify-content:center;
-            font-size:.72rem; font-weight:800; color:white;
-        }
-        .nav-username { font-size:.78rem; font-weight:700; color:rgba(255,255,255,.8); }
+        .snav-logout:hover { background: var(--orange); color: white; }
 
-        .btn-logout {
-            background:rgba(232,98,42,.15);
-            border:1px solid rgba(232,98,42,.3);
-            color:var(--orange);
-            border-radius:8px; padding:6px 14px;
-            font-size:.75rem; font-weight:800;
-            font-family:'Nunito',sans-serif;
-            cursor:pointer; transition:all .15s;
-            text-decoration:none;
-        }
-        .btn-logout:hover { background:var(--orange); color:white; }
-
-        /* ── BODY ── */
-        .body-wrap { max-width:900px; margin:0 auto; padding:32px 20px 48px; }
+        /* ── MAIN AREA ── */
+        .main-area { flex: 1; min-width: 0; }
+        .body-wrap { max-width:900px; margin:0 auto; padding:32px 24px 48px; }
 
         /* ── WELCOME BANNER ── */
         .welcome-banner {
@@ -213,137 +215,310 @@
         .empty-icon { font-size:2.5rem; margin-bottom:12px; }
         .empty-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:1rem; color:var(--navy); margin-bottom:6px; }
         .empty-sub { font-size:.8rem; color:var(--muted); margin-bottom:20px; }
+
+        /* ── STAT CARD CLICKABLE STATE ── */
+        .stat-card.clickable { cursor: pointer; transition: transform .15s, box-shadow .15s; }
+        .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,52,128,.12); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(10,21,53,.55);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--r-lg);
+            width: 100%; max-width: 640px;
+            max-height: 82vh;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+        }
+        .modal-header {
+            background: var(--navy);
+            padding: 18px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .modal-title { font-family:'Poppins',sans-serif; font-weight:800; font-size:1rem; color:var(--white); }
+        .modal-close {
+            background: rgba(255,255,255,.1);
+            border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%;
+            font-size: 1.1rem; line-height: 1;
+            cursor: pointer; display:flex; align-items:center; justify-content:center;
+            transition: background .15s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,.22); }
+        .modal-body {
+            padding: 18px 24px 24px;
+            overflow-y: auto;
+        }
+        .modal-loading, .modal-empty {
+            text-align: center; padding: 40px 10px;
+            color: var(--muted); font-size: .85rem; font-weight: 600;
+        }
+        .modal-note-card {
+            background: var(--off);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .modal-note-card:last-child { margin-bottom: 0; }
+        .modal-note-top { display:flex; align-items:center; justify-content:space-between; margin-bottom: 6px; gap: 10px; }
+        .modal-note-student { font-family:'Poppins',sans-serif; font-weight:700; font-size:.86rem; color:var(--navy); }
+        .modal-note-meta { font-size:.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
+        .modal-note-preview { font-size:.78rem; color:var(--muted); line-height:1.55; margin-bottom: 8px; }
+        .modal-note-footer { display:flex; gap:12px; flex-wrap:wrap; font-size:.68rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 860px) {
+            .app-shell { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: auto; position: relative;
+                flex-direction: row; align-items: center; justify-content: space-between;
+                padding: 10px 16px;
+            }
+            .sidebar-logo { border-bottom: none; padding: 0; }
+            .sidebar-user, .sidebar-nav, .sidebar-footer { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<nav class="topnav">
-    <a th:href="@{/dashboard}" class="nav-logo" style="text-decoration:none;">
-        <div class="logo-svg-wrap">
-            <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:66px;height:58px;object-fit:contain;">
-        </div>
-        <div class="logo-text-block">
+<div class="app-shell">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+        <a th:href="@{/dashboard}" class="sidebar-logo">
+            <div class="logo-svg-wrap">
+                <img src="/logo.png" alt="MyVirtualTAs Logo" style="width:100%;height:100%;object-fit:contain;">
+            </div>
             <div class="logo-text-block">
                 <div><span class="logo-my">Triv</span><span class="logo-virtual">ekii</span><span class="logo-tas"></span></div>
-<!--                <div class="logo-powered">powered by <span>eurekii</span></div>-->
             </div>
-        </div>
-    </a>
-
-    <div class="nav-right">
-        <div class="nav-badge">
-            <div class="pulse"></div>
-            Connected
-        </div>
-<!--        <a href="/dashboard" style="-->
-<!--            text-decoration:none;-->
-<!--            color:rgba(255,255,255,.7);-->
-<!--            font-size:.78rem; font-weight:700;-->
-<!--            padding:6px 14px; border-radius:8px;-->
-<!--            border:1px solid rgba(255,255,255,.1);-->
-<!--            background:rgba(255,255,255,.06);">-->
-<!--            Dashboard-->
-<!--        </a>-->
-        <a th:href="@{/notes/history}" style="text-decoration:none;color:rgba(255,255,255,.7);font-size:.78rem;font-weight:700;padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);">View Full History</a>
-        <a href="/reset-password" style="
-        text-decoration:none;
-        color:rgba(255,255,255,.7);
-        font-size:.78rem; font-weight:700;
-        padding:6px 14px; border-radius:8px;
-        border:1px solid rgba(255,255,255,.1);
-        background:rgba(255,255,255,.06);">
-        Reset Password
         </a>
-        <form th:action="@{/logout}" method="post" style="margin:0;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" style="
-        background:rgba(232,98,42,.15);
-        border:1px solid rgba(232,98,42,.3);
-        color:#E8622A;
-        border-radius:8px;
-        padding:6px 14px;
-        font-size:.78rem;
-        font-weight:800;
-        font-family:'Nunito',sans-serif;
-        cursor:pointer;
-        transition:all .15s;">
-                Logout
-            </button>
-        </form>
-    </div>
-</nav>
 
-<!-- BODY -->
-<div class="body-wrap">
-
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-        <div class="welcome-left">
-            <div class="welcome-hi">Welcome back</div>
-            <div class="welcome-name">Hello, <span th:text="${fullName}">Tutor</span>!</div>
-            <div class="welcome-sub">Ready to generate today's session notes?</div>
-        </div>
-        <a href="/notes" class="btn-generate">Generate New Note</a>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-card">
-<!--            <div class="stat-icon si-navy">📝</div>-->
+        <div class="sidebar-user">
+            <div class="sidebar-avatar" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${#strings.substring(fullName,0,1)} : 'T'">T</div>
             <div>
-                <div class="stat-num" th:text="${totalNotes}">0</div>
-                <div class="stat-lbl">Your Total Notes</div>
+                <div class="sidebar-username" th:text="${fullName != null and !#strings.isEmpty(fullName)} ? ${fullName} : 'Tutor'">Tutor</div>
+                <div class="sidebar-userrole"><span class="pulse" style="display:inline-block;margin-right:4px;"></span>Connected</div>
             </div>
         </div>
-        <div class="stat-card">
-<!--            <div class="stat-icon si-orange">📅</div>-->
-            <div>
-                <div class="stat-num" th:text="${todayNotes}">0</div>
-                <div class="stat-lbl">Notes Today</div>
-            </div>
-        </div>
-        <div class="stat-card">
-<!--            <div class="stat-icon si-teal">🎓</div>-->
-            <div>
-                <div class="stat-num" th:text="${totalStudents}">0</div>
-                <div class="stat-lbl">Students Taught</div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Recent Notes -->
-    <div class="section-title"><span class="dot"></span> Your Recent Session Notes</div>
+        <nav class="sidebar-nav">
+            <div class="snav-label">Module</div>
+            <a th:href="@{/dashboard}" class="snav-link active">
+                <span class="snav-icon"></span> Dashboard
+            </a>
+            <a href="/notes" class="snav-link">
+                <span class="snav-icon"></span> Generate Note
+            </a>
+            <a th:href="@{/notes/history}" class="snav-link">
+                <span class="snav-icon"></span> Full History
+            </a>
+            <a href="/reset-password" class="snav-link">
+                <span class="snav-icon"></span> Reset Password
+            </a>
+        </nav>
 
-    <div th:if="${#lists.isEmpty(recentNotes)}" class="empty-state">
-        <div class="empty-icon">📋</div>
-        <div class="empty-title">No notes yet!</div>
-        <div class="empty-sub">Generate your first session note to see it here.</div>
-        <a href="/notes" class="btn-generate">⚡ Generate First Note</a>
-    </div>
-
-    <div th:each="note : ${recentNotes}" class="note-card">
-        <div class="note-top">
-            <div>
-                <div class="note-student" th:text="${note.studentName}"></div>
-                <div class="note-subject" th:text="${note.subject} + ' · ' + ${note.gradeLevel}"></div>
-            </div>
-            <div class="note-meta">
-                <span class="nbadge"
-                      th:classappend="${note.districtOrState == 'Maryland'} ? 'nb-md' : (${note.districtOrState == 'Florida'} ? 'nb-fl' : 'nb-gen')"
-                      th:text="${note.districtOrState}"></span>
-                <span class="epill">
-                    <span class="epdot" th:classappend="${note.engagement == 'High'} ? 'ep-h' : (${note.engagement == 'Medium'} ? 'ep-m' : 'ep-l')"></span>
-                    <span th:text="${note.engagement}"></span>
-                </span>
-            </div>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="snav-logout">⏻ Logout</button>
+            </form>
         </div>
-        <div class="note-preview" th:text="${note.finalApprovedNote}"></div>
-        <div class="note-footer">
-            <div class="note-date" th:text="'Dated: ' + ${note.sessionDate}"></div>
+    </aside>
+
+    <!-- ══ MAIN AREA ══ -->
+    <div class="main-area">
+        <div class="body-wrap">
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="welcome-left">
+                    <div class="welcome-hi">Welcome back</div>
+                    <div class="welcome-name">Hello, <span th:text="${fullName}">Tutor</span>!</div>
+                    <div class="welcome-sub">Ready to generate today's session notes?</div>
+                </div>
+                <a href="/notes" class="btn-generate">Generate New Note</a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card clickable" onclick="openStatsModal('all')">
+                    <div>
+                        <div class="stat-num" th:text="${totalNotes}">0</div>
+                        <div class="stat-lbl">Your Total Notes</div>
+                    </div>
+                </div>
+                <div class="stat-card clickable" onclick="openStatsModal('today')">
+                    <div>
+                        <div class="stat-num" th:text="${todayNotes}">0</div>
+                        <div class="stat-lbl">Notes Today</div>
+                    </div>
+                </div>
+                <div class="stat-card clickable" onclick="openStatsModal('students')">
+                    <div>
+                        <div class="stat-num" th:text="${totalStudents}">0</div>
+                        <div class="stat-lbl">Students Taught</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Notes -->
+            <div class="section-title"> Your Recent Session Notes</div>
+
+            <div th:if="${#lists.isEmpty(recentNotes)}" class="empty-state">
+<!--                <div class="empty-icon">📋</div>-->
+                <div class="empty-title">No notes yet!</div>
+                <div class="empty-sub">Generate your first session note to see it here.</div>
+                <a href="/notes" class="btn-generate">Generate First Note</a>
+            </div>
+
+            <div th:each="note : ${recentNotes}" class="note-card">
+                <div class="note-top">
+                    <div>
+                        <div class="note-student" th:text="${note.studentName}"></div>
+                        <div class="note-subject" th:text="${note.subject} + ' · ' + ${note.gradeLevel}"></div>
+                    </div>
+                    <div class="note-meta">
+                        <span class="nbadge"
+                              th:classappend="${note.districtOrState == 'Maryland'} ? 'nb-md' : (${note.districtOrState == 'Florida'} ? 'nb-fl' : 'nb-gen')"
+                              th:text="${note.districtOrState}"></span>
+                        <span class="epill">
+                            <span class="epdot" th:classappend="${note.engagement == 'High'} ? 'ep-h' : (${note.engagement == 'Medium'} ? 'ep-m' : 'ep-l')"></span>
+                            <span th:text="${note.engagement}"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="note-preview" th:text="${note.finalApprovedNote}"></div>
+                <div class="note-footer">
+                    <div class="note-date" th:text="'Dated: ' + ${note.sessionDate}"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
 </div>
+
+<!-- ══ STATS MODAL ══ -->
+<div id="statsModalOverlay" class="modal-overlay" onclick="closeStatsModalOnOverlay(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div id="modalTitle" class="modal-title">Notes</div>
+            <button type="button" class="modal-close" onclick="closeStatsModal()">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body">
+            <div class="modal-loading">Loading…</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openStatsModal(type) {
+        const overlay = document.getElementById('statsModalOverlay');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+
+        overlay.classList.add('open');
+        body.innerHTML = '<div class="modal-loading">Loading…</div>';
+
+        if (type === 'all') {
+            title.textContent = 'All Session Notes';
+            fetch('/api/dashboard/notes?filter=all')
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                .then(renderNotesList)
+                .catch(showModalError);
+        } else if (type === 'today') {
+            title.textContent = "Today's Session Notes";
+            fetch('/api/dashboard/notes?filter=today')
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                .then(renderNotesList)
+                .catch(showModalError);
+        } else if (type === 'students') {
+            title.textContent = 'Students Taught';
+            fetch('/api/dashboard/students')
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                .then(renderStudentsList)
+                .catch(showModalError);
+        }
+    }
+
+    function closeStatsModal() {
+        document.getElementById('statsModalOverlay').classList.remove('open');
+    }
+
+    function closeStatsModalOnOverlay(e) {
+        if (e.target.id === 'statsModalOverlay') closeStatsModal();
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeStatsModal();
+    });
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str == null ? '' : str;
+        return div.innerHTML;
+    }
+
+    function renderNotesList(notes) {
+        const body = document.getElementById('modalBody');
+        if (!notes || notes.length === 0) {
+            body.innerHTML = '<div class="modal-empty">No notes found.</div>';
+            return;
+        }
+        body.innerHTML = notes.map(n => {
+            const preview = (n.finalApprovedNote || '');
+            const shortPreview = preview.length > 180 ? preview.slice(0, 180) + '…' : preview;
+            return `
+                <div class="modal-note-card">
+                    <div class="modal-note-top">
+                        <div class="modal-note-student">${escapeHtml(n.studentName || '—')}</div>
+                        <div class="modal-note-meta">${escapeHtml(n.subject || '')}${n.gradeLevel ? ' · ' + escapeHtml(n.gradeLevel) : ''}</div>
+                    </div>
+                    <div class="modal-note-preview">${escapeHtml(shortPreview)}</div>
+                    <div class="modal-note-footer">
+                        <span>${escapeHtml(n.districtOrState || '—')}</span>
+                        <span>${escapeHtml(n.engagement || '—')}</span>
+                        <span>${escapeHtml(n.sessionDate || '—')}</span>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function renderStudentsList(students) {
+        const body = document.getElementById('modalBody');
+        if (!students || students.length === 0) {
+            body.innerHTML = '<div class="modal-empty">No students found.</div>';
+            return;
+        }
+        body.innerHTML = students.map(s => `
+            <div class="modal-note-card">
+                <div class="modal-note-top">
+                    <div class="modal-note-student">${escapeHtml(s.studentName)}</div>
+                    <div class="modal-note-meta">${s.noteCount} note${s.noteCount === 1 ? '' : 's'}</div>
+                </div>
+                <div class="modal-note-footer">
+                    <span>Last session: ${escapeHtml(s.lastSessionDate)}</span>
+                </div>
+            </div>`).join('');
+    }
+
+    function showModalError() {
+        document.getElementById('modalBody').innerHTML =
+            '<div class="modal-empty">Something went wrong loading this data.</div>';
+    }
+</script>
 
 </body>
 </html>

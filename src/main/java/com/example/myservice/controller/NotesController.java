@@ -3,7 +3,11 @@ package com.example.myservice.controller;
 import com.example.myservice.dto.SessionRequest;
 import com.example.myservice.entity.SessionNote;
 import com.example.myservice.repository.SessionNoteRepository;
+import com.example.myservice.service.ExcelExportService;
 import com.example.myservice.service.OpenAiService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -24,13 +30,17 @@ public class NotesController {
     private final OpenAiService openAiService;
     private final SessionNoteRepository noteRepository;
     private final TutorUserRepository tutorUserRepository;
+    private final ExcelExportService excelExportService;
+
 
     public NotesController(OpenAiService openAiService,
                            SessionNoteRepository noteRepository,
-                           TutorUserRepository tutorUserRepository) {
+                           TutorUserRepository tutorUserRepository, ExcelExportService excelExportService) {
         this.openAiService = openAiService;
         this.noteRepository = noteRepository;
         this.tutorUserRepository = tutorUserRepository;
+        this.excelExportService = excelExportService;
+
     }
 
     // Get logged-in tutor's full name
@@ -80,7 +90,26 @@ public class NotesController {
         String currentTutor = getLoggedInTutorName(userDetails);
         List<SessionNote> savedNotes = noteRepository.findAllByTutorNameOrderByCreatedAtDesc(currentTutor);
         model.addAttribute("savedNotes", savedNotes);
+        model.addAttribute("fullName", currentTutor);
         return "notes-history";
+    }
+
+    // ✅ GET: Export saved notes to Excel
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportToExcel(@AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        String currentTutor = getLoggedInTutorName(userDetails);
+        List<SessionNote> notes = noteRepository.findAllByTutorNameOrderByCreatedAtDesc(currentTutor);
+
+        byte[] excelBytes = excelExportService.exportSessionNotes(notes);
+
+        String safeName = currentTutor.replaceAll("[^a-zA-Z0-9]+", "_");
+        String filename = "session-notes-" + safeName + ".xlsx";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excelBytes);
     }
 
     // ✅ POST: Generate note
