@@ -181,7 +181,7 @@
             background: var(--navy-3);
             padding: 14px 20px;
             display: grid;
-            grid-template-columns: 140px 180px 1fr 90px 120px;
+            grid-template-columns: 196px 202px 1fr 196px 153px;;
             align-items: center;
             gap: 0;
             border-bottom: 1px solid rgba(255,255,255,.06);
@@ -223,8 +223,8 @@
             letter-spacing: .04em;
             width: fit-content;
         }
-        .badge-group  { background: var(--orange);  color: var(--white); }
-        .badge-single { background: var(--teal);    color: var(--white); }
+        .badge-group  { color: var(--white); }
+        .badge-single { color: var(--white); }
 
         .state-pill {
             display: inline-block;
@@ -234,9 +234,9 @@
             font-weight: 800;
             width: fit-content;
         }
-        .state-florida { background: rgba(43,168,191,.2); color: var(--teal-2); border: 1px solid rgba(43,168,191,.3); }
-        .state-maryland { background: rgba(26,52,128,.4); color: #7EB3FF; border: 1px solid rgba(126,179,255,.3); }
-        .state-common { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.1); }
+        .state-florida { color: white; border: 1px solid rgba(43,168,191,.3); }
+        .state-maryland { color: white; border: 1px solid rgba(126,179,255,.3); }
+        .state-common { color: white; border: 1px solid rgba(255,255,255,.1); }
 
         .grade-circle {
             width: 36px; height: 36px;
@@ -290,7 +290,7 @@
             border: 1.5px solid #E2E8F0;
             padding: 14px 16px;
             border-radius: 10px;
-            font-style: italic;
+<!--            font-style: italic;-->
         }
 
         .empty-state {
@@ -395,19 +395,19 @@
 
                         <!-- Date -->
                         <div class="meta-cell">
-                            <span class="meta-label">📅 Session Date</span>
+                            <span class="meta-label">Session Date</span>
                             <span class="meta-value" th:text="${n.sessionDate != null ? n.sessionDate : '—'}"></span>
                         </div>
 
                         <!-- Student Names -->
                         <div class="meta-cell">
-                            <span class="meta-label">👩‍🎓 Student(s)</span>
+                            <span class="meta-label">Student(s)</span>
                             <span class="meta-value" th:text="${n.studentName != null ? n.studentName : '—'}"></span>
                         </div>
 
                         <!-- Note Type -->
                         <div class="meta-cell">
-                            <span class="meta-label">📋 Type</span>
+                            <span class="meta-label">Type</span>
                             <span th:if="${n.subject == 'Overall' or n.subject == 'Group' or n.subject == 'Group Class Note'}"
                                   class="type-badge badge-group">Group Class Note</span>
                             <span th:if="${n.subject == 'Student' or n.subject == 'Student Note' or n.subject == 'Single' or n.subject == null}"
@@ -415,8 +415,19 @@
                         </div>
 
                         <!-- State -->
+<!--                        <div class="meta-cell">-->
+<!--                            <span class="meta-label">State</span>-->
+<!--                            <span th:if="${n.districtOrState == 'Florida'}"-->
+<!--                                  class="state-pill state-florida" th:text="${n.districtOrState}"></span>-->
+<!--                            <span th:if="${n.districtOrState == 'Maryland'}"-->
+<!--                                  class="state-pill state-maryland" th:text="${n.districtOrState}"></span>-->
+<!--                            <span th:if="${n.districtOrState == 'Common Core' or n.districtOrState == null}"-->
+<!--                                  class="state-pill state-common"-->
+<!--                                  th:text="${n.districtOrState != null ? n.districtOrState : '—'}"></span>-->
+<!--                        </div>-->
+                        <!-- State -->
                         <div class="meta-cell">
-                            <span class="meta-label">🗺 State</span>
+                            <span class="meta-label">State</span>
                             <span th:if="${n.districtOrState == 'Florida'}"
                                   class="state-pill state-florida" th:text="${n.districtOrState}"></span>
                             <span th:if="${n.districtOrState == 'Maryland'}"
@@ -424,6 +435,9 @@
                             <span th:if="${n.districtOrState == 'Common Core' or n.districtOrState == null}"
                                   class="state-pill state-common"
                                   th:text="${n.districtOrState != null ? n.districtOrState : '—'}"></span>
+                            <span th:if="${n.districtOrState != null and n.districtOrState != 'Florida' and n.districtOrState != 'Maryland' and n.districtOrState != 'Common Core'}"
+                                  class="state-pill state-common"
+                                  th:text="${n.districtOrState == 'No Standard Taught' ? 'NA' : n.districtOrState}"></span>
                         </div>
 
                         <!-- Grade -->
