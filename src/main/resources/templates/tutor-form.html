@@ -1,3 +1,731 @@
+<!--
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trivekii Session Note Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            &#45;&#45;navy:#1A3480; &#45;&#45;navy-2:#142970; &#45;&#45;navy-3:#0F1F55; &#45;&#45;navy-dark:#0A1535;
+            &#45;&#45;orange:#E8622A; &#45;&#45;orange-2:#F07842; &#45;&#45;teal:#2BA8BF; &#45;&#45;teal-2:#3DBDD6;
+            &#45;&#45;white:#FFFFFF; &#45;&#45;off:#F5F7FC; &#45;&#45;border:#DDE4F5; &#45;&#45;text:#0A1535;
+            &#45;&#45;muted:#5B6E96; &#45;&#45;green:#0B7A56; &#45;&#45;green-bg:#E6FAF3;
+            &#45;&#45;r-lg:18px; &#45;&#45;r-xl:24px;
+            &#45;&#45;sidebar-w: 240px;
+        }
+        body { font-family:'Nunito',sans-serif; background:var(&#45;&#45;off); color:var(&#45;&#45;text); min-height:100vh; }
+
+        /* ══ APP SHELL / SIDEBAR ══ */
+        .app-shell { display:flex; min-height:100vh; }
+        .sidebar {
+            width: var(&#45;&#45;sidebar-w);
+            flex-shrink: 0;
+            background: var(&#45;&#45;navy-dark);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            box-shadow: 2px 0 24px rgba(10,21,53,.35);
+            z-index: 100;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 12px;
+            padding: 22px 22px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            text-decoration: none;
+        }
+        .logo-svg-wrap {
+            width: 42px; height: 42px; background: white; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.2); flex-shrink: 0;
+        }
+        .logo-text-block { line-height: 1.1; }
+        .logo-my { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(&#45;&#45;white); }
+        .logo-virtual { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(&#45;&#45;orange); }
+        .logo-tas { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(&#45;&#45;teal); }
+
+        .sidebar-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .sidebar-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(&#45;&#45;orange);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .82rem; font-weight: 800; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-username { font-size: .82rem; font-weight: 800; color: rgba(255,255,255,.9); }
+        .sidebar-userrole { font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+        .sidebar-nav { padding: 16px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .snav-label {
+            font-size: .62rem; font-weight: 800; color: rgba(255,255,255,.25);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 10px 10px 6px;
+        }
+        .snav-link {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 12px; border-radius: 9px;
+            text-decoration: none; color: rgba(255,255,255,.6);
+            font-size: .82rem; font-weight: 700;
+            transition: all .15s;
+        }
+        .snav-icon { width: 18px; text-align: center; font-size: .9rem; flex-shrink: 0; }
+        .snav-link:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+        .snav-link.active {
+            background: rgba(232,98,42,.15);
+            color: var(&#45;&#45;orange);
+            box-shadow: inset 3px 0 0 var(&#45;&#45;orange);
+        }
+        .snav-badge {
+            margin-left: auto;
+            display: flex; align-items: center; gap: 5px;
+            font-size: .62rem; font-weight: 700; color: rgba(255,255,255,.3);
+        }
+        .pulse { width:7px; height:7px; border-radius:50%; background:#22C55E; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+        .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }
+        .snav-logout {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(232,98,42,.12);
+            border: 1px solid rgba(232,98,42,.28);
+            color: var(&#45;&#45;orange);
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-size: .8rem; font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer; transition: all .15s;
+        }
+        .snav-logout:hover { background: var(&#45;&#45;orange); color: white; }
+
+        .main-area { flex: 1; min-width: 0; }
+
+        .card-overflow-visible { overflow: visible; }
+
+        /* ══ PAGE CONTENT (unchanged from original, just re-scoped) ══ */
+        .hero { background:linear-gradient(135deg,var(&#45;&#45;navy-dark) 0%,var(&#45;&#45;navy-2) 50%,var(&#45;&#45;navy) 100%); padding:44px 40px 40px; position:relative; overflow:hidden; }
+        .hero-decor-1 { position:absolute; top:-50px; right:-50px; width:260px; height:260px; border-radius:50%; background:var(&#45;&#45;orange); opacity:.06; }
+        .hero-decor-2 { position:absolute; bottom:-70px; left:20%; width:200px; height:200px; border-radius:50%; background:var(&#45;&#45;teal); opacity:.07; }
+        .hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:1; }
+        .hero-title { font-family:'Poppins',sans-serif; font-size:2.1rem; color:var(&#45;&#45;white); line-height:1.18; margin-bottom:12px; letter-spacing:-.4px; }
+        .hero-title .hl-orange { color:var(&#45;&#45;orange); }
+        .hero-title .hl-teal { color:var(&#45;&#45;teal); }
+        .hero-sub { font-size:.88rem; color:rgba(255,255,255,.5); line-height:1.65; }
+        .body-wrap { max-width:900px; margin:0 auto; padding:50px 20px 52px; }
+        .step-row { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+        .step-num { width:28px; height:28px; border-radius:50%; background:var(&#45;&#45;navy); color:var(&#45;&#45;white); font-family:'Poppins',sans-serif; font-weight:800; font-size:.75rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .step-label { font-family:'Poppins',sans-serif; font-size:.78rem; font-weight:700; color:var(&#45;&#45;navy); letter-spacing:.03em; }
+        .step-line { flex:1; height:1px; background:var(&#45;&#45;border); }
+        .form-2col { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+        .obs-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+        .card { background:var(&#45;&#45;white); border:1.5px solid var(&#45;&#45;border); border-radius:var(&#45;&#45;r-lg); overflow:hidden; box-shadow:0 2px 12px rgba(26,52,128,.05); }
+        .card-head { padding:15px 20px; background:var(&#45;&#45;navy); display:flex; align-items:center; gap:11px; border-radius: var(&#45;&#45;r-lg) var(&#45;&#45;r-lg) 0 0; }
+        .card-head-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:.85rem; color:var(&#45;&#45;white); }
+        .card-head-sub { font-size:.67rem; color:rgba(255,255,255,.38); margin-top:1px; }
+        .card-body { padding:20px 22px; }
+        .field { margin-bottom:14px; }
+        .field:last-child { margin-bottom:0; }
+        .flabel { display:block; font-size:.72rem; font-weight:800; color:var(&#45;&#45;navy); margin-bottom:5px; letter-spacing:.02em; }
+        .flabel .req { color:var(&#45;&#45;orange); margin-left:2px; }
+        .finput, .fselect, .ftextarea { width:100%; background:var(&#45;&#45;off); border:1.5px solid var(&#45;&#45;border); border-radius:9px; padding:10px 13px; font-size:.84rem; font-family:'Nunito',sans-serif; font-weight:600; color:var(&#45;&#45;text); transition:all .2s; outline:none; }
+        .finput:focus, .fselect:focus, .ftextarea:focus { border-color:var(&#45;&#45;navy); background:var(&#45;&#45;white); box-shadow:0 0 0 3px rgba(26,52,128,.09); }
+        .finput[readonly], .finput:disabled { background:#EEF1F8; color:var(&#45;&#45;muted); cursor:not-allowed; }
+        .ftextarea { resize:vertical; line-height:1.55; }
+        .eng-radio { display:none; }
+        .eng-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:11px 6px; border:2px solid var(&#45;&#45;border); border-radius:10px; background:var(&#45;&#45;off); font-size:.75rem; font-weight:800; color:var(&#45;&#45;muted); cursor:pointer; transition:all .15s; text-align:center; }
+        .eng-icon { font-size:1.1rem; }
+        .eng-radio:checked + .eng-btn { border-color:var(&#45;&#45;navy); background:var(&#45;&#45;navy); color:var(&#45;&#45;white); box-shadow:0 4px 12px rgba(26,52,128,.25); }
+        .obs-section-label { font-size:.68rem; font-weight:800; color:var(&#45;&#45;navy); text-transform:uppercase; letter-spacing:.08em; padding:8px 0 6px; border-bottom:1px solid var(&#45;&#45;border); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+        .obs-dot { width:6px; height:6px; border-radius:50%; }
+        .obs-dot-orange { background:var(&#45;&#45;orange); }
+        .obs-dot-teal { background:var(&#45;&#45;teal); }
+        .btn-gen { width:100%; background:var(&#45;&#45;orange); color:var(&#45;&#45;white); border:none; border-radius:12px; padding:15px; font-size:.95rem; font-weight:800; font-family:'Poppins',sans-serif; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; }
+        .btn-gen:hover { background:var(&#45;&#45;orange-2); transform:translateY(-2px); box-shadow:0 8px 24px rgba(232,98,42,.38); }
+        .btn-save { width:100%; background:var(&#45;&#45;navy); color:var(&#45;&#45;white); border:none; border-radius:12px; padding:13px; font-size:.9rem; font-weight:800; font-family:'Poppins',sans-serif; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; }
+        .btn-save:hover { background:var(&#45;&#45;navy-2); transform:translateY(-1px); }
+        .btn-copy { background:transparent; border:2px solid rgba(255,255,255,.2); color:rgba(255,255,255,.8); border-radius:8px; padding:5px 13px; font-size:.72rem; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .15s; }
+        .btn-copy:hover { background:rgba(255,255,255,.1); color:var(&#45;&#45;white); }
+        .btn-copy.copied { background:var(&#45;&#45;green); border-color:var(&#45;&#45;green); color:#fff; }
+        .draft-wrap { background:var(&#45;&#45;navy-dark); border-radius:var(&#45;&#45;r-xl); overflow:hidden; margin-bottom:24px; box-shadow:0 4px 24px rgba(10,21,53,.2); }
+        .draft-bar { background:var(&#45;&#45;orange); padding:13px 22px; display:flex; align-items:center; justify-content:space-between; }
+        .draft-bar-title { font-family:'Poppins',sans-serif; font-weight:800; font-size:.88rem; color:var(&#45;&#45;white); }
+        .draft-inner { padding:20px 22px; }
+        .draft-inner textarea { width:100%; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1); border-radius:10px; padding:14px; font-size:.82rem; font-family:'Nunito',sans-serif; font-weight:600; color:rgba(255,255,255,.88); line-height:1.6; resize:vertical; outline:none; transition:border-color .2s; }
+        .draft-inner textarea:focus { border-color:var(&#45;&#45;teal); }
+        .alert-ok { background:var(&#45;&#45;green-bg); border:2px solid #86EFAC; border-radius:12px; padding:12px 18px; font-size:.83rem; font-weight:700; color:var(&#45;&#45;green); display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+        .db-wrap { background:var(&#45;&#45;navy-dark); border-radius:var(&#45;&#45;r-xl); overflow:hidden; margin-top:32px; box-shadow:0 4px 28px rgba(10,21,53,.18); }
+        .db-bar { padding:20px 26px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.06); background:var(&#45;&#45;navy-3); }
+        .db-bar-title { font-family:'Poppins',sans-serif; font-weight:800; font-size:.98rem; color:var(&#45;&#45;white); }
+        table.dbt { width:100%; border-collapse:collapse; font-size:.77rem; }
+        .dbt thead th { padding:10px 16px; text-align:left; font-size:.61rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.22); border-bottom:1px solid rgba(255,255,255,.05); background:rgba(255,255,255,.02); }
+        .dbt tbody tr { border-bottom:1px solid rgba(255,255,255,.035); transition:background .12s; }
+        .dbt tbody tr:hover { background:rgba(43,168,191,.04); }
+        .dbt tbody td { padding:11px 16px; color:rgba(255,255,255,.6); vertical-align:middle; }
+        .dbt td.idc { font-family:'Poppins',sans-serif; font-weight:800; color:var(&#45;&#45;teal-2); font-size:.8rem; }
+        .dbt td.notec { max-width:170px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:rgba(255,255,255,.25); font-style:italic; }
+        .dbadge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+        .dbadge-md { background:var(&#45;&#45;navy); color:#7EB3FF; border:1px solid rgba(126,179,255,.3); }
+        .dbadge-fl { background:rgba(43,168,191,.2); color:var(&#45;&#45;teal-2); border:1px solid rgba(43,168,191,.3); }
+        .dbadge-gen { background:rgba(255,255,255,.07); color:rgba(255,255,255,.45); }
+        .epill { display:inline-flex; align-items:center; gap:5px; font-size:.73rem; }
+        .epdot { width:7px; height:7px; border-radius:50%; }
+        .epdot-h { background:#22C55E; }
+        .epdot-m { background:#F59E0B; }
+        .epdot-l { background:#EF4444; }
+        .dbt-empty { text-align:center; padding:36px; color:rgba(255,255,255,.16); font-style:italic; font-size:.8rem; }
+        .footer { background:var(&#45;&#45;navy-dark); padding:22px 40px; display:flex; align-items:center; justify-content:space-between; margin-top:48px; }
+        .footer-right { font-size:.7rem; color:rgba(255,255,255,.2); font-weight:600; }
+        #groupFields { display:none; margin-top:12px; }
+        #groupFields.visible { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 860px) {
+            .app-shell { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: auto; position: relative;
+                flex-direction: row; align-items: center; justify-content: space-between;
+                padding: 10px 16px;
+            }
+            .sidebar-logo { border-bottom: none; padding: 0; }
+            .sidebar-user, .sidebar-nav, .sidebar-footer { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    &lt;!&ndash; ══ SIDEBAR ══ &ndash;&gt;
+    <aside class="sidebar">
+        <a th:href="@{/dashboard}" class="sidebar-logo">
+            <div class="logo-svg-wrap">
+                <img src="/logo.png" alt="Trivekii Logo" style="width:100%;height:100%;object-fit:contain;">
+            </div>
+            <div class="logo-text-block">
+                <div><span class="logo-my">Triv</span><span class="logo-virtual">ekii</span><span class="logo-tas"></span></div>
+            </div>
+        </a>
+
+        <div class="sidebar-user">
+            <div class="sidebar-avatar" th:text="${#strings.substring(sessionRequest.tutorName, 0, 1)}">T</div>
+            <div>
+                <div class="sidebar-username" th:text="${sessionRequest.tutorName}">Tutor</div>
+                <div class="sidebar-userrole"><span class="pulse" style="display:inline-block;margin-right:4px;"></span>Connected</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="snav-label">Module</div>
+            <a th:href="@{/dashboard}" class="snav-link">
+                <span class="snav-icon"></span> Dashboard
+            </a>
+            <a href="/notes" class="snav-link active">
+                <span class="snav-icon"></span> Generate Note
+            </a>
+            <a th:href="@{/notes/history}" class="snav-link">
+                <span class="snav-icon"></span> Full History
+            </a>
+            <a href="/reset-password" class="snav-link">
+                <span class="snav-icon"></span> Reset Password
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="snav-logout">⏻ Logout</button>
+            </form>
+        </div>
+    </aside>
+
+    &lt;!&ndash; ══ MAIN AREA ══ &ndash;&gt;
+    <div class="main-area">
+
+&lt;!&ndash;        <div class="hero">&ndash;&gt;
+&lt;!&ndash;            <div class="hero-decor-1"></div>&ndash;&gt;
+&lt;!&ndash;            <div class="hero-decor-2"></div>&ndash;&gt;
+&lt;!&ndash;            <div class="hero-inner">&ndash;&gt;
+&lt;!&ndash;                <div class="hero-title">Generate <span class="hl-orange">Professional Notes</span><br>in <span class="hl-teal">Seconds</span>, Not Minutes</div>&ndash;&gt;
+&lt;!&ndash;                <div class="hero-sub">Fill in a few quick session pointers and let our AI write a polished, curriculum-aligned note.</div>&ndash;&gt;
+&lt;!&ndash;            </div>&ndash;&gt;
+&lt;!&ndash;        </div>&ndash;&gt;
+
+        <div class="body-wrap">
+
+            <div th:if="${saveSuccess}" class="alert-ok">✓ &nbsp;Note saved successfully!</div>
+
+            <div th:if="${#strings.equals(param['error'] != null ? param['error'][0] : '', 'sparse')}"
+                 style="background:#FCEBEB; border:1.5px solid #FECACA; border-radius:10px;
+                    padding:13px 18px; margin-bottom:18px; font-size:.84rem; font-weight:700; color:#A32D2D;
+                    display:flex; align-items:center; gap:10px;">
+                Your observations are too brief. Please add more detail about what happened
+                in the session before generating a note.
+            </div>
+
+            &lt;!&ndash; Draft Output &ndash;&gt;
+            <div th:if="${generatedNote}" class="draft-wrap">
+                <div class="draft-bar">
+                    <div class="draft-bar-title"> Draft Ready - Review, Edit &amp; Save</div>
+                    <button type="button" class="btn-copy" id="copyBtn" onclick="copyNote()">Copy Note</button>
+                </div>
+                <div class="draft-inner">
+                    <form th:action="@{/notes/approve}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <textarea id="noteTextarea" name="finalApprovedNote" rows="8" th:text="${generatedNote}"></textarea>
+                        <input type="hidden" name="tutorName"          th:value="${sessionRequest.tutorName}" />
+                        <input type="hidden" name="sessionDate"        th:value="${sessionRequest.sessionDate}" />
+                        <input type="hidden" name="studentName"        th:value="${sessionRequest.studentName}" />
+                        <input type="hidden" name="gradeLevel"         th:value="${sessionRequest.gradeLevel}" />
+                        <input type="hidden" name="engagement"         th:value="${sessionRequest.engagement}" />
+                        <input type="hidden" name="keyPointers"        th:value="${sessionRequest.keyPointers}" />
+                        <input type="hidden" name="districtOrState"    th:value="${sessionRequest.districtOrState}" />
+                        <input type="hidden" name="noteType"           th:value="${sessionRequest.subject}" />
+                        <input type="hidden" name="curriculumStandard" th:value="${sessionRequest.curriculumStandard}" />
+                        <button type="submit" class="btn-save">Save to the Database</button>
+                    </form>
+                </div>
+            </div>
+
+            &lt;!&ndash; FORM &ndash;&gt;
+            <form id="generateForm" th:action="@{/notes/generate}" th:object="${sessionRequest}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" id="selectedStandardHidden" name="curriculumStandard" value="" />
+
+                &lt;!&ndash; STEP 1 &ndash;&gt;
+                <div class="step-row">
+                    <div class="step-num">1</div>
+                    <div class="step-label">Session Information</div>
+                    <div class="step-line"></div>
+                </div>
+
+                <div class="form-2col">
+                    &lt;!&ndash; Tutor Card &ndash;&gt;
+                    <div class="card">
+                        <div class="card-head"><div class="card-head-title">Tutor Information</div></div>
+                        <div class="card-body">
+                            <div class="field">
+                                <label class="flabel">Tutor Name <span class="req">*</span></label>
+                                <input type="text" th:field="*{tutorName}" class="finput" readonly />
+                            </div>
+                            <div class="field">
+                                <label class="flabel">Session Date <span class="req">*</span></label>
+                                <input type="date" th:field="*{sessionDate}" class="finput" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    &lt;!&ndash; Student & Note Type Card &ndash;&gt;
+                    <div class="card">
+                        <div class="card-head"><div class="card-head-title">Student(s) &amp; Note Type</div></div>
+                        <div class="card-body">
+                            <div class="field">
+                                <label class="flabel">Note Type <span class="req">*</span></label>
+                                <select id="noteTypeSelect" th:field="*{subject}" class="fselect" required onchange="handleNoteTypeChange()">
+                                    <option value="Student">Student Note</option>
+                                    <option value="Overall">Group Class Note</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="flabel" id="studentNameLabel">Student Name(s) <span class="req">*</span></label>
+                                <input type="text" th:field="*{studentName}" id="studentNameInput"
+                                       class="finput" placeholder="e.g. Emily Johnson" />
+                            </div>
+                            <div class="field">
+                                <label class="flabel">Pronouns <span class="req">*</span></label>
+                                <select th:field="*{pronouns}" class="fselect" required>
+                                    <option value="he/him">He / Him</option>
+                                    <option value="she/her">She / Her</option>
+                                    <option value="they/them">They / Them</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+                            &lt;!&ndash; Group fields - shown only for Group Class Note &ndash;&gt;
+                            <div id="groupFields">
+                                <div class="field">
+                                    <label class="flabel">Number of Students <span class="req">*</span></label>
+                                    <input type="number" th:field="*{numberOfStudents}" id="numberOfStudents"
+                                           class="finput" placeholder="e.g. 4" min="1" max="30" />
+                                </div>
+                                <div class="field">
+                                    <label class="flabel">Group Label <span style="color:var(&#45;&#45;muted);font-weight:600;">(optional)</span></label>
+                                    <input type="text" th:field="*{groupLabel}" class="finput"
+                                           placeholder="e.g. Group A, Math Crew" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                &lt;!&ndash; Curriculum Context Card &ndash;&gt;
+                <div class="card card-overflow-visible" style="margin-bottom:18px;">
+                    <div class="card-head">
+                        <div>
+                            <div class="card-head-title">Curriculum Context</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
+
+                            <div class="field">
+                                <label class="flabel">State <span class="req">*</span></label>
+                                <select id="stateSelect" th:field="*{districtOrState}" class="fselect" required onchange="loadGrades()">
+                                    <option value="">&#45;&#45; Select State &#45;&#45;</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Common Core">Common Core</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="No Standard Taught">Miscellaneous</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="flabel"><span id="gradeLabelText">Grade Level</span> <span class="req">*</span></label>
+                                <select id="gradeSelect" th:field="*{gradeLevel}" class="fselect" required disabled onchange="loadStandards()">
+                                    <option value="">&#45;&#45; Select Grade &#45;&#45;</option>
+                                </select>
+                            </div>
+                            &lt;!&ndash;<div class="field">
+                                <label class="flabel">Curriculum Standard <span class="req">*</span></label>
+                                <select id="standardSelect" class="fselect" required disabled onchange="showStandardPreview()">
+                                    <option value="">&#45;&#45; Select Specific Standard &#45;&#45;</option>
+                                </select>
+                                <div id="standardPreview" style="display:none; margin-top:8px; padding:10px 14px;
+                                        background:#EEF4FF; border-radius:8px; font-size:12px; color:#1a3a6b;
+                                        line-height:1.5; font-weight:600;"></div>
+                            </div>&ndash;&gt;
+                            <div class="field" style="position:relative;">
+                                <label class="flabel">Curriculum Standard <span class="req">*</span></label>
+                                <input type="text" id="standardSearchInput" class="finput" autocomplete="off"
+                                       placeholder="&#45;&#45; Select Grade First &#45;&#45;" disabled
+                                       oninput="filterStandardList()" onfocus="filterStandardList()" />
+                                <div id="standardDropdownList" style="display:none; position:fixed; z-index:9999; max-height:220px; overflow-y:auto;
+                                    background:#fff; border:1px solid #d5dbe4; border-radius:8px;
+                                    box-shadow:0 6px 18px rgba(0,0,0,0.08);"></div>
+                                <div id="standardPreview" style="display:none; margin-top:8px; padding:10px 14px;
+                                    background:#EEF4FF; border-radius:8px; font-size:12px; color:#1a3a6b;
+                                    line-height:1.5; font-weight:600;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                &lt;!&ndash; STEP 2 &ndash;&gt;
+                <div class="step-row">
+                    <div class="step-num">2</div>
+                    <div class="step-label">Session Observations</div>
+                    <div class="step-line"></div>
+                </div>
+
+                <div class="card" style="margin-bottom:18px;">
+                    <div class="card-head"><div class="card-head-title">Engagement, Behaviour &amp; Skills</div></div>
+                    <div class="card-body">
+
+                        &lt;!&ndash; Engagement Level &ndash;&gt;
+                        <div class="field" style="margin-bottom:20px;">
+                            <label class="flabel">Overall Engagement Level</label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:360px;">
+                                <div>
+                                    <input type="radio" th:field="*{engagement}" value="High" id="e-h" class="eng-radio"/>
+                                    <label for="e-h" class="eng-btn"><span class="eng-icon">🟢</span>High</label>
+                                </div>
+                                <div>
+                                    <input type="radio" th:field="*{engagement}" value="Medium" id="e-m" class="eng-radio"/>
+                                    <label for="e-m" class="eng-btn"><span class="eng-icon">🟡</span>Medium</label>
+                                </div>
+                                <div>
+                                    <input type="radio" th:field="*{engagement}" value="Low" id="e-l" class="eng-radio"/>
+                                    <label for="e-l" class="eng-btn"><span class="eng-icon">🔴</span>Low</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &lt;!&ndash; TWO SPLIT TEXTAREAS &ndash;&gt;
+                        <div class="obs-grid">
+                            <div class="field">
+                                <div class="obs-section-label">
+                                    <span class="obs-dot obs-dot-orange"></span>
+                                    Engagement &amp; Behaviour <span style="color:var(&#45;&#45;orange);margin-left:2px;">*</span>
+                                </div>
+                                <textarea id="engagementNotes" th:field="*{engagementNotes}"
+                                          class="ftextarea" rows="5"
+                                          placeholder="Mood, focus, energy, distractions, attitude, participation...&#10;&#10;e.g. Was very focused today. Got a bit distracted mid-session but quickly refocused. Asked great questions."
+                                          required></textarea>
+                            </div>
+                            <div class="field">
+                                <div class="obs-section-label">
+                                    <span class="obs-dot obs-dot-teal"></span>
+                                    Skills &amp; Specific Moments <span style="color:var(&#45;&#45;orange);margin-left:2px;">*</span>
+                                </div>
+                                <textarea id="skillsNotes" th:field="*{skillsNotes}"
+                                          class="ftextarea" rows="5"
+                                          placeholder="Math covered, what clicked, struggles, specific examples, tools used...&#10;&#10;e.g. Nailed classifying triangles by angles. Confused scalene vs isosceles. Used visual chart to help."
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        &lt;!&ndash; Next Steps &ndash;&gt;
+                        <div class="field" style="margin-top:16px;">
+                            <label class="flabel">Next Steps / Homework (optional)</label>
+                            <input type="text" th:field="*{nextSteps}" class="finput"
+                                   placeholder="e.g. Complete worksheet page 10, move on to quadrilateral classification" />
+                        </div>
+                    </div>
+                </div>
+
+                &lt;!&ndash; STEP 3 &ndash;&gt;
+                <div class="step-row">
+                    <div class="step-num">3</div>
+                    <div class="step-label">Generate Your Note</div>
+                    <div class="step-line"></div>
+                </div>
+
+                <button type="submit" class="btn-gen">Generate Note</button>
+            </form>
+
+            &lt;!&ndash; LATEST FEEDS &ndash;&gt;
+            <div class="db-wrap">
+                <div class="db-bar">
+                    <div class="db-bar-title">Latest Feeds</div>
+                    <a th:href="@{/notes/history}" style="color:var(&#45;&#45;teal-2);font-size:.75rem;font-weight:700;text-decoration:none;">See All Notes ➔</a>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="dbt">
+                        <thead>
+                        <tr><th>S.No.</th><th>Name</th><th>District</th><th>Type</th><th>Grade</th><th>Standard</th><th>Engagement</th><th>Note Preview</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="n, iterStat : ${savedNotes}">
+                            <td class="idc" th:text="${iterStat.count}"></td>
+                            <td th:text="${n.studentName}"></td>
+                            <td><span class="dbadge" th:classappend="${n.districtOrState == 'Maryland'} ? 'dbadge-md' : (${n.districtOrState == 'Florida'} ? 'dbadge-fl' : 'dbadge-gen')" th:text="${n.districtOrState}"></span></td>
+                            <td th:text="${n.subject}"></td>
+                            <td th:text="${n.gradeLevel}"></td>
+                            <td class="notec" th:text="${n.curriculumStandard}"></td>
+                            <td><span class="epill"><span class="epdot" th:classappend="${n.engagement == 'High'} ? 'epdot-h' : (${n.engagement == 'Medium'} ? 'epdot-m' : 'epdot-l')"></span><span th:text="${n.engagement}"></span></span></td>
+                            <td class="notec" th:text="${n.finalApprovedNote}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(savedNotes)}">
+                            <td colspan="8" class="dbt-empty">No entries yet — generate and save your first session note above.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+&lt;!&ndash;        <div class="footer">&ndash;&gt;
+&lt;!&ndash;            <div class="footer-right">Trivekii © 2026 Trivium Education Services Pvt. Ltd.</div>&ndash;&gt;
+&lt;!&ndash;        </div>&ndash;&gt;
+
+    </div>
+</div>
+
+<script>
+    let currentStandardsList = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const d = document.querySelector('input[type="date"]');
+        if (d && !d.value) {
+            const now = new Date();
+            d.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        }
+        const radios = document.querySelectorAll('input[name="engagement"]');
+        if (![...radios].some(r => r.checked) && radios.length) radios[0].checked = true;
+        handleNoteTypeChange();
+    });
+
+    function copyNote() {
+        const t = document.getElementById('noteTextarea');
+        const b = document.getElementById('copyBtn');
+        if (!t) return;
+        navigator.clipboard.writeText(t.value).then(() => {
+            b.textContent = 'Copied!'; b.classList.add('copied');
+            setTimeout(() => { b.textContent = 'Copy Note'; b.classList.remove('copied'); }, 2000);
+        });
+    }
+
+    function handleNoteTypeChange() {
+        const noteType     = document.getElementById('noteTypeSelect').value;
+        const groupFields  = document.getElementById('groupFields');
+        const studentLabel = document.getElementById('studentNameLabel');
+        const studentInput = document.getElementById('studentNameInput');
+        const numStudents  = document.getElementById('numberOfStudents');
+        const pronounsSelect = document.querySelector('select[name="pronouns"]');
+
+        if (noteType === 'Overall') {
+            groupFields.classList.add('visible');
+            studentLabel.innerHTML = 'Group Name <span style="color:var(&#45;&#45;muted);font-weight:600;">(optional)</span>';
+            studentInput.placeholder = 'e.g. Morning Group, Team A (leave blank for default)';
+            studentInput.removeAttribute('required');
+            if (numStudents) numStudents.setAttribute('required', 'true');
+            if (pronounsSelect) pronounsSelect.value = 'they/them';
+            if (pronounsSelect) pronounsSelect.disabled = true;
+            if (pronounsSelect) pronounsSelect.style.opacity = '0.5';
+        } else {
+            groupFields.classList.remove('visible');
+            studentLabel.innerHTML = 'Student Name(s) <span class="req">*</span>';
+            studentInput.placeholder = 'e.g. Emily Johnson';
+            studentInput.setAttribute('required', 'true');
+            if (numStudents) numStudents.removeAttribute('required');
+            if (pronounsSelect) pronounsSelect.disabled = false;
+            if (pronounsSelect) pronounsSelect.style.opacity = '1';
+            if (pronounsSelect) pronounsSelect.value = 'he/him';
+        }
+    }
+
+    function loadGrades() {
+        const state = document.getElementById("stateSelect").value;
+        const gradeSelect = document.getElementById("gradeSelect");
+        const gradeLabelEl = document.getElementById("gradeLabelText");
+        const searchInput = document.getElementById("standardSearchInput");
+
+        gradeSelect.innerHTML = '<option value="">&#45;&#45; Select &#45;&#45;</option>';
+        searchInput.value = "";
+        searchInput.placeholder = "&#45;&#45; Select Grade First &#45;&#45;";
+        searchInput.disabled = true;
+        document.getElementById("standardDropdownList").style.display = "none";
+        document.getElementById("selectedStandardHidden").value = "";
+        document.getElementById("standardPreview").style.display = "none";
+
+        if (state === "No Standard Taught") {
+            gradeSelect.innerHTML = '<option value="NA">NA</option>';
+            gradeSelect.disabled = false;
+            searchInput.value = "No Standard Taught";
+            searchInput.disabled = false;
+            document.getElementById("selectedStandardHidden").value = "[Standard NA: NA]";
+            return;
+        }
+
+        if (!state) { gradeSelect.disabled = true; return; }
+
+        if (gradeLabelEl) gradeLabelEl.textContent = "Grade Level";
+        fetch(`/api/standards/grades?state=${encodeURIComponent(state)}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(g => {
+                    const opt = document.createElement("option");
+                    opt.value = g;
+                    const isNumeric = !isNaN(g) || g === 'K';
+                    opt.textContent = (state === "Florida" && isNumeric) ? "Grade " + g : g;
+                    gradeSelect.appendChild(opt);
+                });
+                gradeSelect.disabled = false;
+            });
+    }
+
+    function loadStandards() {
+        const state = document.getElementById("stateSelect").value;
+        const grade = document.getElementById("gradeSelect").value;
+        const searchInput = document.getElementById("standardSearchInput");
+        searchInput.value = "";
+        document.getElementById("selectedStandardHidden").value = "";
+        document.getElementById("standardPreview").style.display = "none";
+        if (!grade) { searchInput.disabled = true; return; }
+
+        fetch(`/api/standards/list?state=${encodeURIComponent(state)}&grade=${encodeURIComponent(grade)}`)
+            .then(res => res.json())
+            .then(data => {
+                currentStandardsList = data;
+                searchInput.disabled = false;
+                searchInput.placeholder = "Type to search (e.g. 'fractions' or '5.NF')...";
+            });
+    }
+
+    function filterStandardList() {
+        const input = document.getElementById("standardSearchInput");
+        const listEl = document.getElementById("standardDropdownList");
+
+        const rect = input.getBoundingClientRect();
+        listEl.style.position = "fixed";
+        listEl.style.top = (rect.bottom) + "px";
+        listEl.style.left = rect.left + "px";
+        listEl.style.width = rect.width + "px";
+
+        const query = input.value.trim().toLowerCase();
+        const matches = currentStandardsList.filter(std =>
+            std.code.toLowerCase().includes(query) || std.description.toLowerCase().includes(query)
+        );
+
+        if (matches.length === 0) {
+            listEl.innerHTML = '<div style="padding:10px 14px;color:#8a93a3;font-size:12px;">No matching standards</div>';
+        } else {
+            listEl.innerHTML = matches.map(std => {
+                const value = `[Standard ${std.code}: ${std.description}]`;
+                const safeValue = value.replace(/"/g, '&quot;');
+                return `<div class="std-option" style="padding:9px 14px;cursor:pointer;font-size:12.5px;
+                            border-bottom:1px solid #f0f2f5;" data-value="${safeValue}"
+                            onmouseover="this.style.background='#F4F7FF'" onmouseout="this.style.background='#fff'"
+                            onclick="selectStandard(this)">
+                            <strong>${std.code}</strong> — ${std.description}
+                        </div>`;
+            }).join('');
+        }
+        listEl.style.display = "block";
+    }
+
+    function selectStandard(el) {
+        const value = el.getAttribute("data-value");
+        document.getElementById("selectedStandardHidden").value = value;
+        document.getElementById("standardSearchInput").value = el.textContent.trim();
+        document.getElementById("standardDropdownList").style.display = "none";
+
+        const desc = value.split(':').slice(1).join(':').replace(']', '').trim();
+        const preview = document.getElementById("standardPreview");
+        preview.textContent = '📌 ' + desc;
+        preview.style.display = "block";
+    }
+
+    document.addEventListener("click", function(e) {
+        const wrapper = document.getElementById("standardSearchInput").closest(".field");
+        if (wrapper && !wrapper.contains(e.target)) {
+            document.getElementById("standardDropdownList").style.display = "none";
+        }
+    });
+
+    window.addEventListener("scroll", function(e) {
+        const listEl = document.getElementById("standardDropdownList");
+        if (!listEl.contains(e.target)) {
+            listEl.style.display = "none";
+        }
+    }, true);
+
+    document.getElementById("generateForm").addEventListener("submit", function(e) {
+        const state = document.getElementById("stateSelect").value;
+        const isNA = state === "No Standard Taught";
+
+        if (!isNA) {
+            const grade = document.getElementById("gradeSelect").value;
+            if (!grade) {
+                e.preventDefault();
+                alert("Please select a Grade Level before generating.");
+                return;
+            }
+            const stdVal = document.getElementById("selectedStandardHidden").value;
+            if (!stdVal) {
+                e.preventDefault();
+                alert("Please select a Curriculum Standard before generating.");
+                return;
+            }
+        }
+
+        const eng = document.getElementById("engagementNotes").value.trim();
+        const skills = document.getElementById("skillsNotes").value.trim();
+        if (!eng && !skills) {
+            e.preventDefault();
+            alert("Please fill in at least one observation field.");
+            return;
+        }
+    });
+</script>
+</body>
+</html>-->
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -106,6 +834,8 @@
 
         .main-area { flex: 1; min-width: 0; }
 
+        .card-overflow-visible { overflow: visible; }
+
         /* ══ PAGE CONTENT (unchanged from original, just re-scoped) ══ */
         .hero { background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy-2) 50%,var(--navy) 100%); padding:44px 40px 40px; position:relative; overflow:hidden; }
         .hero-decor-1 { position:absolute; top:-50px; right:-50px; width:260px; height:260px; border-radius:50%; background:var(--orange); opacity:.06; }
@@ -123,7 +853,7 @@
         .form-2col { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
         .obs-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
         .card { background:var(--white); border:1.5px solid var(--border); border-radius:var(--r-lg); overflow:hidden; box-shadow:0 2px 12px rgba(26,52,128,.05); }
-        .card-head { padding:15px 20px; background:var(--navy); display:flex; align-items:center; gap:11px; }
+        .card-head { padding:15px 20px; background:var(--navy); display:flex; align-items:center; gap:11px; border-radius: var(--r-lg) var(--r-lg) 0 0; }
         .card-head-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:.85rem; color:var(--white); }
         .card-head-sub { font-size:.67rem; color:rgba(255,255,255,.38); margin-top:1px; }
         .card-body { padding:20px 22px; }
@@ -150,9 +880,13 @@
         .btn-copy { background:transparent; border:2px solid rgba(255,255,255,.2); color:rgba(255,255,255,.8); border-radius:8px; padding:5px 13px; font-size:.72rem; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .15s; }
         .btn-copy:hover { background:rgba(255,255,255,.1); color:var(--white); }
         .btn-copy.copied { background:var(--green); border-color:var(--green); color:#fff; }
+        .btn-regen { background:transparent; border:2px solid rgba(255,255,255,.2); color:rgba(255,255,255,.8); border-radius:8px; padding:5px 13px; font-size:.72rem; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .15s; }
+        .btn-regen:hover { background:rgba(61,189,214,.2); border-color:var(--teal-2); color:var(--teal-2); }
+        .btn-regen:disabled { opacity:.55; cursor:not-allowed; }
         .draft-wrap { background:var(--navy-dark); border-radius:var(--r-xl); overflow:hidden; margin-bottom:24px; box-shadow:0 4px 24px rgba(10,21,53,.2); }
-        .draft-bar { background:var(--orange); padding:13px 22px; display:flex; align-items:center; justify-content:space-between; }
+        .draft-bar { background:var(--orange); padding:13px 22px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
         .draft-bar-title { font-family:'Poppins',sans-serif; font-weight:800; font-size:.88rem; color:var(--white); }
+        .draft-bar-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
         .draft-inner { padding:20px 22px; }
         .draft-inner textarea { width:100%; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1); border-radius:10px; padding:14px; font-size:.82rem; font-family:'Nunito',sans-serif; font-weight:600; color:rgba(255,255,255,.88); line-height:1.6; resize:vertical; outline:none; transition:border-color .2s; }
         .draft-inner textarea:focus { border-color:var(--teal); }
@@ -237,7 +971,7 @@
         <div class="sidebar-footer">
             <form th:action="@{/logout}" method="post" style="margin:0;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="snav-logout">⏻ Logout</button>
+                <button type="submit" class="snav-logout"> Logout</button>
             </form>
         </div>
     </aside>
@@ -245,14 +979,14 @@
     <!-- ══ MAIN AREA ══ -->
     <div class="main-area">
 
-<!--        <div class="hero">-->
-<!--            <div class="hero-decor-1"></div>-->
-<!--            <div class="hero-decor-2"></div>-->
-<!--            <div class="hero-inner">-->
-<!--                <div class="hero-title">Generate <span class="hl-orange">Professional Notes</span><br>in <span class="hl-teal">Seconds</span>, Not Minutes</div>-->
-<!--                <div class="hero-sub">Fill in a few quick session pointers and let our AI write a polished, curriculum-aligned note.</div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <!--        <div class="hero">-->
+        <!--            <div class="hero-decor-1"></div>-->
+        <!--            <div class="hero-decor-2"></div>-->
+        <!--            <div class="hero-inner">-->
+        <!--                <div class="hero-title">Generate <span class="hl-orange">Professional Notes</span><br>in <span class="hl-teal">Seconds</span>, Not Minutes</div>-->
+        <!--                <div class="hero-sub">Fill in a few quick session pointers and let our AI write a polished, curriculum-aligned note.</div>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
         <div class="body-wrap">
 
@@ -262,7 +996,7 @@
                  style="background:#FCEBEB; border:1.5px solid #FECACA; border-radius:10px;
                     padding:13px 18px; margin-bottom:18px; font-size:.84rem; font-weight:700; color:#A32D2D;
                     display:flex; align-items:center; gap:10px;">
-                ⚠ Your observations are too brief — please add more detail about what happened
+                Your observations are too brief. Please add more detail about what happened
                 in the session before generating a note.
             </div>
 
@@ -270,7 +1004,10 @@
             <div th:if="${generatedNote}" class="draft-wrap">
                 <div class="draft-bar">
                     <div class="draft-bar-title">✦ AI Draft Ready — Review &amp; Edit</div>
-                    <button type="button" class="btn-copy" id="copyBtn" onclick="copyNote()">Copy Note</button>
+                    <div class="draft-bar-actions">
+                        <button type="button" class="btn-regen" id="regenBtn" onclick="regenerateNote()"> Regenerate</button>
+                        <button type="button" class="btn-copy" id="copyBtn" onclick="copyNote()">Copy Note</button>
+                    </div>
                 </div>
                 <div class="draft-inner">
                     <form th:action="@{/notes/approve}" method="post">
@@ -287,13 +1024,33 @@
                         <input type="hidden" name="curriculumStandard" th:value="${sessionRequest.curriculumStandard}" />
                         <button type="submit" class="btn-save">Save to the Database</button>
                     </form>
+
+                    <!-- Hidden regenerate form: resubmits the SAME session inputs back to /notes/generate
+                         so the tutor never has to re-pick State/Grade/Standard just to get a new draft. -->
+                    <form id="regenForm" th:action="@{/notes/generate}" method="post" style="display:none;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" name="tutorName"          th:value="${sessionRequest.tutorName}" />
+                        <input type="hidden" name="sessionDate"        th:value="${sessionRequest.sessionDate}" />
+                        <input type="hidden" name="studentName"        th:value="${sessionRequest.studentName}" />
+                        <input type="hidden" name="pronouns"           th:value="${sessionRequest.pronouns}" />
+                        <input type="hidden" name="gradeLevel"         th:value="${sessionRequest.gradeLevel}" />
+                        <input type="hidden" name="engagement"         th:value="${sessionRequest.engagement}" />
+                        <input type="hidden" name="engagementNotes"    th:value="${sessionRequest.engagementNotes}" />
+                        <input type="hidden" name="skillsNotes"        th:value="${sessionRequest.skillsNotes}" />
+                        <input type="hidden" name="nextSteps"          th:value="${sessionRequest.nextSteps}" />
+                        <input type="hidden" name="districtOrState"    th:value="${sessionRequest.districtOrState}" />
+                        <input type="hidden" name="subject"            th:value="${sessionRequest.subject}" />
+                        <input type="hidden" name="curriculumStandard" th:value="${sessionRequest.curriculumStandard}" />
+                        <input type="hidden" name="numberOfStudents"   th:value="${sessionRequest.numberOfStudents}" />
+                        <input type="hidden" name="groupLabel"         th:value="${sessionRequest.groupLabel}" />
+                    </form>
                 </div>
             </div>
 
             <!-- FORM -->
             <form id="generateForm" th:action="@{/notes/generate}" th:object="${sessionRequest}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <input type="hidden" id="selectedStandardHidden" name="curriculumStandard" value="" />
+                <input type="hidden" id="selectedStandardHidden" name="curriculumStandard" th:value="${sessionRequest.curriculumStandard}" />
 
                 <!-- STEP 1 -->
                 <div class="step-row">
@@ -361,7 +1118,7 @@
                 </div>
 
                 <!-- Curriculum Context Card -->
-                <div class="card" style="margin-bottom:18px;">
+                <div class="card card-overflow-visible" style="margin-bottom:18px;">
                     <div class="card-head">
                         <div>
                             <div class="card-head-title">Curriculum Context</div>
@@ -374,10 +1131,10 @@
                                 <label class="flabel">State <span class="req">*</span></label>
                                 <select id="stateSelect" th:field="*{districtOrState}" class="fselect" required onchange="loadGrades()">
                                     <option value="">-- Select State --</option>
+                                    <option value="No Standard Taught">NA</option>
                                     <option value="Florida">Florida</option>
                                     <option value="Common Core">Common Core</option>
                                     <option value="Maryland">Maryland</option>
-                                    <option value="No Standard Taught">Miscellaneous</option>
                                 </select>
                             </div>
                             <div class="field">
@@ -386,14 +1143,26 @@
                                     <option value="">-- Select Grade --</option>
                                 </select>
                             </div>
-                            <div class="field">
+                            <!--<div class="field">
                                 <label class="flabel">Curriculum Standard <span class="req">*</span></label>
                                 <select id="standardSelect" class="fselect" required disabled onchange="showStandardPreview()">
-                                    <option value="">-- Select Specific Standard --</option>
+                                    <option value="">&#45;&#45; Select Specific Standard &#45;&#45;</option>
                                 </select>
                                 <div id="standardPreview" style="display:none; margin-top:8px; padding:10px 14px;
                                         background:#EEF4FF; border-radius:8px; font-size:12px; color:#1a3a6b;
                                         line-height:1.5; font-weight:600;"></div>
+                            </div>-->
+                            <div class="field" style="position:relative;">
+                                <label class="flabel">Curriculum Standard <span class="req">*</span></label>
+                                <input type="text" id="standardSearchInput" class="finput" autocomplete="off"
+                                       placeholder="-- Select Grade First --" disabled
+                                       oninput="filterStandardList()" onfocus="filterStandardList()" />
+                                <div id="standardDropdownList" style="display:none; position:fixed; z-index:9999; max-height:220px; overflow-y:auto;
+                                    background:#fff; border:1px solid #d5dbe4; border-radius:8px;
+                                    box-shadow:0 6px 18px rgba(0,0,0,0.08);"></div>
+                                <div id="standardPreview" style="display:none; margin-top:8px; padding:10px 14px;
+                                    background:#EEF4FF; border-radius:8px; font-size:12px; color:#1a3a6b;
+                                    line-height:1.5; font-weight:600;"></div>
                             </div>
                         </div>
                     </div>
@@ -503,14 +1272,25 @@
             </div>
         </div>
 
-<!--        <div class="footer">-->
-<!--            <div class="footer-right">Trivekii © 2026 Trivium Education Services Pvt. Ltd.</div>-->
-<!--        </div>-->
+        <!--        <div class="footer">-->
+        <!--            <div class="footer-right">Trivekii © 2026 Trivium Education Services Pvt. Ltd.</div>-->
+        <!--        </div>-->
 
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Values already known server-side from the last generate/regenerate/error round-trip.
+    // Used to silently re-populate the State -> Grade -> Standard cascade on page load,
+    // instead of making the tutor reselect everything every time.
+    const initialState    = /*[[${sessionRequest.districtOrState}]]*/ '';
+    const initialGrade    = /*[[${sessionRequest.gradeLevel}]]*/ '';
+    const initialStandard = /*[[${sessionRequest.curriculumStandard}]]*/ '';
+    /*]]>*/
+
+    let currentStandardsList = [];
+
     window.addEventListener('DOMContentLoaded', () => {
         const d = document.querySelector('input[type="date"]');
         if (d && !d.value) {
@@ -520,6 +1300,12 @@
         const radios = document.querySelectorAll('input[name="engagement"]');
         if (![...radios].some(r => r.checked) && radios.length) radios[0].checked = true;
         handleNoteTypeChange();
+
+        // Restore State -> Grade -> Standard cascade if the server already has these values
+        // (i.e. we're rendering after a Generate, Regenerate, or a validation-error bounce).
+        if (initialState) {
+            loadGrades(initialGrade, initialStandard);
+        }
     });
 
     function copyNote() {
@@ -530,6 +1316,26 @@
             b.textContent = 'Copied!'; b.classList.add('copied');
             setTimeout(() => { b.textContent = 'Copy Note'; b.classList.remove('copied'); }, 2000);
         });
+    }
+
+    function regenerateNote() {
+        // Regenerate re-runs the AI on the ORIGINAL observation fields, not on any
+        // edits made in the note textarea below - so warn if those edits would be lost.
+        const textarea = document.getElementById('noteTextarea');
+        if (textarea && textarea.value !== textarea.defaultValue) {
+            const proceed = confirm(
+                "Regenerating will create a brand new AI draft and discard the edits " +
+                "you've made to this note. Continue?"
+            );
+            if (!proceed) return;
+        }
+
+        const btn = document.getElementById('regenBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Regenerating…';
+        }
+        document.getElementById('regenForm').submit();
     }
 
     function handleNoteTypeChange() {
@@ -561,28 +1367,43 @@
         }
     }
 
-    function loadGrades() {
+    // preselectGrade / preselectStandard are only passed when we're restoring state
+    // after a reload (see DOMContentLoaded above). Normal onchange="loadGrades()"
+    // calls from the State <select> pass no args, so behaviour there is unchanged.
+    function loadGrades(preselectGrade, preselectStandard) {
         const state = document.getElementById("stateSelect").value;
         const gradeSelect = document.getElementById("gradeSelect");
-        const stdSelect = document.getElementById("standardSelect");
         const gradeLabelEl = document.getElementById("gradeLabelText");
+        const searchInput = document.getElementById("standardSearchInput");
+
         gradeSelect.innerHTML = '<option value="">-- Select --</option>';
-        stdSelect.innerHTML = '<option value="">-- Select Specific Standard --</option>';
-        stdSelect.disabled = true;
+        searchInput.value = "";
+        searchInput.placeholder = "-- Select Grade First --";
+        searchInput.disabled = true;
+        document.getElementById("standardDropdownList").style.display = "none";
+        if (!preselectStandard) {
+            document.getElementById("selectedStandardHidden").value = "";
+        }
+        document.getElementById("standardPreview").style.display = "none";
 
         if (state === "No Standard Taught") {
-            gradeSelect.innerHTML = '<option value="NA">N/A</option>';
+            gradeSelect.innerHTML = '<option value="NA">NA</option>';
             gradeSelect.disabled = false;
-            stdSelect.innerHTML = '<option value="[Standard NA: NA]">No Standard Taught</option>';
-            stdSelect.disabled = false;
-            document.getElementById("selectedStandardHidden").value = "N/A";
-            document.getElementById("standardPreview").style.display = "none";
+            // Clear any standards fetched for a PREVIOUSLY selected real state/grade —
+            // otherwise clicking the (still-focusable) search field re-opens a dropdown
+            // of stale real standards via filterStandardList(), letting the tutor pick
+            // one even though State/Grade both show "NA".
+            currentStandardsList = [];
+            searchInput.value = "NA";
+            searchInput.disabled = true;
+            document.getElementById("standardDropdownList").style.display = "none";
+            document.getElementById("selectedStandardHidden").value = "[Standard NA: NA]";
             return;
         }
 
         if (!state) { gradeSelect.disabled = true; return; }
 
-        if (gradeLabelEl) gradeLabelEl.textContent = (state === "Maryland" || state === "Common Core") ? "Grade Level" : "Grade Level";
+        if (gradeLabelEl) gradeLabelEl.textContent = "Grade Level";
         fetch(`/api/standards/grades?state=${encodeURIComponent(state)}`)
             .then(res => res.json())
             .then(data => {
@@ -594,39 +1415,111 @@
                     gradeSelect.appendChild(opt);
                 });
                 gradeSelect.disabled = false;
+
+                if (preselectGrade) {
+                    gradeSelect.value = preselectGrade;
+                    loadStandards(preselectStandard);
+                }
             });
     }
 
-    function loadStandards() {
+    // preselectStandard is only passed when restoring state after a reload.
+    function loadStandards(preselectStandard) {
         const state = document.getElementById("stateSelect").value;
         const grade = document.getElementById("gradeSelect").value;
-        const stdSelect = document.getElementById("standardSelect");
-        stdSelect.innerHTML = '<option value="">-- Select Specific Standard --</option>';
-        if (!grade) { stdSelect.disabled = true; return; }
+        const searchInput = document.getElementById("standardSearchInput");
+
+        if (!preselectStandard) {
+            searchInput.value = "";
+            document.getElementById("selectedStandardHidden").value = "";
+            document.getElementById("standardPreview").style.display = "none";
+        }
+        if (!grade) { searchInput.disabled = true; return; }
+
         fetch(`/api/standards/list?state=${encodeURIComponent(state)}&grade=${encodeURIComponent(grade)}`)
             .then(res => res.json())
             .then(data => {
-                data.forEach(std => {
-                    const opt = document.createElement("option");
-                    opt.value = `[Standard ${std.code}: ${std.description}]`;
-                    opt.textContent = `${std.code} — ${std.description}`;
-                    stdSelect.appendChild(opt);
-                });
-                stdSelect.disabled = false;
+                currentStandardsList = data;
+                searchInput.disabled = false;
+                searchInput.placeholder = "Type to search (e.g. 'fractions' or '5.NF')...";
+
+                if (preselectStandard) {
+                    // Expected format: [Standard CODE: Description text]
+                    const match = preselectStandard.match(/^\[Standard\s+([^:]+):\s*(.+)\]$/);
+                    if (match) {
+                        searchInput.value = `${match[1].trim()} — ${match[2].trim()}`;
+                        const preview = document.getElementById("standardPreview");
+                        preview.textContent = '📌 ' + match[2].trim();
+                        preview.style.display = "block";
+                    }
+                    document.getElementById("selectedStandardHidden").value = preselectStandard;
+                }
             });
     }
 
-    function showStandardPreview() {
-        const val = document.getElementById('standardSelect').value;
-        const preview = document.getElementById('standardPreview');
-        if (val && val.includes(':')) {
-            const desc = val.split(':').slice(1).join(':').replace(']','').trim();
-            preview.textContent = '📌 ' + desc;
-            preview.style.display = 'block';
-        } else {
-            preview.style.display = 'none';
+    function filterStandardList() {
+        // Defensive guard: never show standard suggestions in "No Standard Taught" mode,
+        // even if the input were re-enabled by some other code path in the future.
+        if (document.getElementById("stateSelect").value === "No Standard Taught") {
+            return;
         }
+
+        const input = document.getElementById("standardSearchInput");
+        const listEl = document.getElementById("standardDropdownList");
+
+        const rect = input.getBoundingClientRect();
+        listEl.style.position = "fixed";
+        listEl.style.top = (rect.bottom) + "px";
+        listEl.style.left = rect.left + "px";
+        listEl.style.width = rect.width + "px";
+
+        const query = input.value.trim().toLowerCase();
+        const matches = currentStandardsList.filter(std =>
+            std.code.toLowerCase().includes(query) || std.description.toLowerCase().includes(query)
+        );
+
+        if (matches.length === 0) {
+            listEl.innerHTML = '<div style="padding:10px 14px;color:#8a93a3;font-size:12px;">No matching standards</div>';
+        } else {
+            listEl.innerHTML = matches.map(std => {
+                const value = `[Standard ${std.code}: ${std.description}]`;
+                const safeValue = value.replace(/"/g, '&quot;');
+                return `<div class="std-option" style="padding:9px 14px;cursor:pointer;font-size:12.5px;
+                            border-bottom:1px solid #f0f2f5;" data-value="${safeValue}"
+                            onmouseover="this.style.background='#F4F7FF'" onmouseout="this.style.background='#fff'"
+                            onclick="selectStandard(this)">
+                            <strong>${std.code}</strong> — ${std.description}
+                        </div>`;
+            }).join('');
+        }
+        listEl.style.display = "block";
     }
+
+    function selectStandard(el) {
+        const value = el.getAttribute("data-value");
+        document.getElementById("selectedStandardHidden").value = value;
+        document.getElementById("standardSearchInput").value = el.textContent.trim();
+        document.getElementById("standardDropdownList").style.display = "none";
+
+        const desc = value.split(':').slice(1).join(':').replace(']', '').trim();
+        const preview = document.getElementById("standardPreview");
+        preview.textContent = '📌 ' + desc;
+        preview.style.display = "block";
+    }
+
+    document.addEventListener("click", function(e) {
+        const wrapper = document.getElementById("standardSearchInput").closest(".field");
+        if (wrapper && !wrapper.contains(e.target)) {
+            document.getElementById("standardDropdownList").style.display = "none";
+        }
+    });
+
+    window.addEventListener("scroll", function(e) {
+        const listEl = document.getElementById("standardDropdownList");
+        if (!listEl.contains(e.target)) {
+            listEl.style.display = "none";
+        }
+    }, true);
 
     document.getElementById("generateForm").addEventListener("submit", function(e) {
         const state = document.getElementById("stateSelect").value;
@@ -639,8 +1532,12 @@
                 alert("Please select a Grade Level before generating.");
                 return;
             }
-            const stdVal = document.getElementById("standardSelect").value;
-            if (stdVal) document.getElementById("selectedStandardHidden").value = stdVal;
+            const stdVal = document.getElementById("selectedStandardHidden").value;
+            if (!stdVal) {
+                e.preventDefault();
+                alert("Please select a Curriculum Standard before generating.");
+                return;
+            }
         }
 
         const eng = document.getElementById("engagementNotes").value.trim();

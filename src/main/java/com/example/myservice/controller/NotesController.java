@@ -157,13 +157,13 @@ public class NotesController {
 
         sessionRequest.setKeyPointers(mergedPointers.toString());
 
-        // ✅ SPARSE INPUT CHECK: Block generation if observations are too brief
-        String engTrimmed   = engagementNotes != null ? engagementNotes.trim() : "";
+        // ✅ SPARSE INPUT CHECK: Block generation if either observation field is too brief
+        String engTrimmed    = engagementNotes != null ? engagementNotes.trim() : "";
         String skillsTrimmed = skillsNotes    != null ? skillsNotes.trim()     : "";
-        String combined     = (engTrimmed + " " + skillsTrimmed).trim();
-        int wordCount       = combined.isEmpty() ? 0 : combined.split("\\s+").length;
+        int engWordCount    = engTrimmed.isEmpty()    ? 0 : engTrimmed.split("\\s+").length;
+        int skillsWordCount = skillsTrimmed.isEmpty() ? 0 : skillsTrimmed.split("\\s+").length;
 
-        if (wordCount < 8) {
+        if (engWordCount < 8 || skillsWordCount < 8) {
             session.setAttribute("lastSessionRequest", sessionRequest);
             return "redirect:/notes?error=sparse";
         }
