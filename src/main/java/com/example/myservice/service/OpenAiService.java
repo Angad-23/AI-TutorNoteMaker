@@ -65,7 +65,7 @@ public class OpenAiService {
             Map<?, ?> responseBody = response.getBody();
 
             // to check the response from the prompts given
-//            System.out.println("GROQ RAW RESPONSE: " + responseBody);
+            System.out.println("GROQ RAW RESPONSE: " + responseBody);
 
             if (responseBody != null && responseBody.containsKey("choices")) {
                 List<?> choices = (List<?>) responseBody.get("choices");
@@ -194,10 +194,21 @@ public class OpenAiService {
                 "By the end of the session, she did well with generating partial products! I will keep working " +
                 "on the area model and rounding tomorrow. It's evident she needs a lot of support in terms of " +
                 "fact fluency because she always has to skip count or use repeated addition.\"\n\n" +
-                "Example 3: \"Guadalupe did so well today! She demonstrated fantastic understanding of the area " +
+                "Example 3: \"Guadalupe did so well today! She showed a fantastic understanding of the area " +
                 "model, even with 3-digit by 2-digit multiplication. She answered the exit ticket wrong because " +
                 "she told me she had a hard time lining up all of the numbers properly. Her final product was " +
                 "wrong, but she caught her mistake!\"\n\n" +
+                "Example 4: \"Marcus had a nice session today. I was very encouraged to see him show " +
+                "understanding of what the tick marks mean on a triangle. He responds well to direction and " +
+                "had strong participation throughout. Content-wise, he could use another exposure to this " +
+                "material, but he's improving.\"\n\n" +
+                "Example 5: \"Chloe had an up-and-down day. She answered every question correctly during the " +
+                "main lesson, but only got a small fraction right during the final game. That's a real " +
+                "contrast worth keeping an eye on next time.\"\n\n" +
+                "Example 6: \"Tyler had an up-and-down session today. He's easily distracted and I needed to " +
+                "redirect him consistently to keep his attention, but he always answered when I asked him " +
+                "something directly, and he was respectful throughout. Some questions he got right away; " +
+                "others, like identifying triangles by type, tripped him up.\"\n\n" +
 
                 "YOUR TASK — Write ONE paragraph about this specific session, using ONLY the details below:\n\n" +
                 "Student Name: " + student + "\n" +
@@ -236,10 +247,13 @@ public class OpenAiService {
                 "a different pronoun set.\n" +
                 "9. NEVER use formal academic language like 'fluency', 'automaticity', 'demonstrated proficiency', " +
                 "'procedural fluency' — use plain tutor language instead.\n" +
-                "10. If 'Next Steps' was given by the tutor, use it directly for the closing. If it's empty, you " +
-                "may still end with a clear-eyed observation about a persistent gap or plan, but ONLY if it's " +
-                "directly supported by the stated observations — never invent a plan or gap that wasn't implied " +
-                "by what was written. If nothing supports a natural closing, simply end on the last real observation.\n" +
+                "10. If 'Next Steps' was given by the tutor, you MUST use its specific content in your closing " +
+                "sentence — do not paraphrase away the specific detail or substitute a different, more general " +
+                "plan. Keep the tutor's actual wording/idea intact, just make it read naturally as one sentence " +
+                "in your voice. If 'Next Steps' is empty, you may still end with a clear-eyed observation about " +
+                "a persistent gap or plan, but ONLY if it's directly supported by the stated observations — " +
+                "never invent a plan or gap that wasn't implied by what was written. If nothing supports a " +
+                "natural closing, simply end on the last real observation.\n" +
                 "11. Avoid vague, content-free closings that don't name anything specific (e.g. 'excited for next " +
                 "time' with nothing concrete attached). A specific forward-looking sentence naming an actual " +
                 "topic or skill is fine and encouraged when it fits (e.g. 'I'll keep working on the area model " +
@@ -323,6 +337,15 @@ public class OpenAiService {
                 "have liked were taken up trying to solve that issue. Every student was able to answer one " +
                 "conversion question, and for the last few minutes we finished with a decimal Blooket. I look " +
                 "forward to continuing to work with the students on decimal places.\"\n\n" +
+                "Example 5: \"We had a good group session today with all four scholars logged in on time. We " +
+                "worked on perimeter, starting with basic shapes before moving to a challenge problem where " +
+                "they had to find a missing side from the total perimeter — everyone handled both well. We " +
+                "wrapped up with a quick game to reinforce it.\"\n\n" +
+                "Example 6: \"Today's group session was rougher than usual. Several students seemed distracted " +
+                "by something offscreen, and a couple spent more time playing with the drawing tool than " +
+                "working. We started with a review of parallel lines, which went fine, but the group really " +
+                "struggled once we moved into identifying quadrilaterals. I tried a more hands-on approach, " +
+                "but engagement stayed low. We ended with a Blooket on quadrilaterals.\"\n\n" +
 
                 "YOUR TASK — Write ONE paragraph about this specific session, using ONLY the details below:\n\n" +
                 "Group: " + groupDesc + "\n" +
@@ -358,12 +381,15 @@ public class OpenAiService {
                 "proficiency', 'procedural fluency'.\n" +
                 "10. Each observation gets ONE mention only — never loop back or repeat a point already made. " +
                 "Once all key moments are covered, stop.\n" +
-                "11. If 'Next Steps' was given by the tutor, use it directly for the closing. If it's empty, you " +
-                "may still end with a clear-eyed observation about a pattern or plan, but ONLY if it's directly " +
-                "supported by the stated observations — never invent one. A specific forward-looking sentence " +
-                "naming an actual topic or skill (e.g. 'we will continue going over division next session') is " +
-                "fine and encouraged when it fits — just avoid vague, content-free closings that name nothing " +
-                "specific.\n" +
+                "11. If 'Next Steps' was given by the tutor, you MUST use its specific content in your closing " +
+                "sentence — do not paraphrase away the specific detail or substitute a different, more general " +
+                "plan. If it names a specific student or a specific action, keep that specificity intact. If " +
+                "'Next Steps' is empty, you may still end with a clear-eyed observation about a pattern or " +
+                "plan, but ONLY if it's directly supported by the stated observations — never invent one.\n" +
+                "specific.\n\n" +
+                "⚠ FINAL CHECK before writing: any reference to a SINGLE individual student must use 'one " +
+                "student', 'another student', 'this student', or their situation described directly — NEVER " +
+                "'they', 'them', or 'their' for one person. Only the group as a whole may use 'they/them'.\n\n" +
                 "Write the group session note now:";
     }
 }

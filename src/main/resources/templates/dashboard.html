@@ -12,7 +12,7 @@
             --white: #FFFFFF; --off: #F5F7FC; --border: #DDE4F5;
             --text: #0A1931; --muted: #5B6E96;
             --green: #0B7A56; --green-bg: #E6FAF3;
-            --r: 12px; --r-lg: 18px;
+            --r: 12px; --r-lg: 8px;
             --sidebar-w: 240px;
         }
         body { font-family:'Nunito',sans-serif; background:var(--off); color:var(--text); min-height:100vh; }
@@ -82,7 +82,6 @@
         .snav-link {
             display: flex; align-items: center; gap: 11px;
             padding: 10px 12px;
-            border-radius: 9px;
             text-decoration: none;
             color: rgba(255,255,255,.6);
             font-size: .82rem; font-weight: 700;
@@ -93,7 +92,7 @@
         .snav-link.active {
             background: rgba(232,98,42,.15);
             color: var(--orange);
-            box-shadow: inset 3px 0 0 var(--orange);
+            box-shadow: inset 0px 0 0 var(--white);
         }
 
         .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }
@@ -322,7 +321,7 @@
                 <span class="snav-icon"></span> Generate Note
             </a>
             <a th:href="@{/notes/history}" class="snav-link">
-                <span class="snav-icon"></span> Full History
+                <span class="snav-icon"></span> Notes History
             </a>
             <a href="/reset-password" class="snav-link">
                 <span class="snav-icon"></span> Reset Password

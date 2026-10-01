@@ -81,7 +81,7 @@
         }
         .snav-link {
             display: flex; align-items: center; gap: 11px;
-            padding: 10px 12px; border-radius: 9px;
+            padding: 10px 12px;
             text-decoration: none; color: rgba(255,255,255,.6);
             font-size: .82rem; font-weight: 700;
             transition: all .15s;
@@ -91,7 +91,7 @@
         .snav-link.active {
             background: rgba(232,98,42,.15);
             color: var(--orange);
-            box-shadow: inset 3px 0 0 var(--orange);
+            box-shadow: inset 0px 0 0 var(--orange);
         }
 
         .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); }
@@ -151,7 +151,7 @@
             background: var(--orange);
             color: white;
             padding: 10px 20px;
-            border-radius: 8px;
+<!--            border-radius: 8px;-->
             text-decoration: none;
             font-weight: 700;
             font-size: .82rem;
@@ -160,6 +160,7 @@
             align-items: center;
             gap: 7px;
             margin-right: 10px;
+            text-decoration: none;
         }
         .btn-export:hover { background: var(--orange-2); transform: translateY(-1px); }
 
@@ -170,7 +171,7 @@
         .note-card {
             background: var(--white);
             border: 1.5px solid var(--border);
-            border-radius: 16px;
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(26,52,128,.05);
             transition: box-shadow .2s;
@@ -263,8 +264,8 @@
             margin-bottom: 12px;
             padding: 8px 12px;
             background: #F0F4FF;
-            border-radius: 8px;
-            border-left: 3px solid var(--navy);
+<!--            border-radius: 8px;-->
+<!--            border-left: 3px solid var(&#45;&#45;navy);-->
         }
         .standard-icon { font-size: .8rem; margin-top: 1px; flex-shrink: 0; }
         .standard-text {
@@ -354,7 +355,7 @@
                 <span class="snav-icon"></span> Generate Note
             </a>
             <a th:href="@{/notes/history}" class="snav-link active">
-                <span class="snav-icon"></span> Full History
+                <span class="snav-icon"></span> Notes History
             </a>
             <a href="/reset-password" class="snav-link">
                 <span class="snav-icon"></span> Reset Password
@@ -454,12 +455,12 @@
 
                         <!-- Standard row (only if present) -->
                         <div class="standard-row" th:if="${n.curriculumStandard != null and !#strings.isEmpty(n.curriculumStandard)}">
-                            <span class="standard-icon">📐</span>
+<!--                            <span class="standard-icon">📐</span>-->
                             <span class="standard-text" th:text="${n.curriculumStandard}"></span>
                         </div>
 
                         <!-- Note text -->
-                        <div class="note-label">Approved Session Note Artifact:</div>
+                        <div class="note-label">Approved Note Artifact:</div>
                         <div class="note-text" th:text="${n.finalApprovedNote}"></div>
 
                     </div>
